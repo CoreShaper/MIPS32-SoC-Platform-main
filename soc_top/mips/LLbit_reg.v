@@ -8,11 +8,11 @@ module LLbit_reg(
 	input wire										rst,
 	
 	input wire                    flush,
-	//Ğ´¶Ë¿Ú
+	//????
 	input wire										LLbit_i,
 	input wire                    we,
 	
-	//¶Á¶Ë¿Ú1
+	//???1
 	output reg                    LLbit_o
 	
 );
