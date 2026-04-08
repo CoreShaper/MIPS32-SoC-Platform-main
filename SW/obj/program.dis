@@ -1,0 +1,72 @@
+
+obj/program.elf：     文件格式 elf32-tradbigmips
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	3c1d0001 	lui	sp,0x1
+   4:	27bd0000 	addiu	sp,sp,0
+   8:	3c080000 	lui	t0,0x0
+   c:	25080080 	addiu	t0,t0,128
+  10:	3c090000 	lui	t1,0x0
+  14:	25290080 	addiu	t1,t1,128
+  18:	ad000000 	sw	zero,0(t0)
+  1c:	25080004 	addiu	t0,t0,4
+  20:	1509fffd 	bne	t0,t1,18 <_start+0x18>
+  24:	00000000 	nop
+  28:	0c000010 	jal	40 <main>
+  2c:	00000000 	nop
+  30:	00000000 	nop
+  34:	0800000d 	j	34 <_start+0x34>
+  38:	00000000 	nop
+  3c:	00000000 	nop
+
+00000040 <main>:
+  40:	24020001 	li	v0,1
+  44:	ac02fff0 	sw	v0,-16(zero)
+  48:	1000ffff 	b	48 <main+0x8>
+  4c:	00000000 	nop
+
+Disassembly of section .reginfo:
+
+00000050 <.reginfo>:
+  50:	b0000300 	0xb0000300
+	...
+
+Disassembly of section .MIPS.abiflags:
+
+00000068 <__bss_end-0x18>:
+  68:	00002002 	srl	a0,zero,0x0
+  6c:	01010005 	lsa	zero,t0,at,0x1
+	...
+
+Disassembly of section .pdr:
+
+00000000 <.pdr>:
+   0:	00000040 	ssnop
+	...
+  18:	0000001d 	0x1d
+  1c:	0000001f 	0x1f
+
+Disassembly of section .gnu.attributes:
+
+00000000 <.gnu.attributes>:
+   0:	41000000 	mftc0	zero,c0_index
+   4:	0f676e75 	jal	d9db9d4 <_stack_top+0xd9cb9d4>
+   8:	00010000 	sll	zero,at,0x0
+   c:	00070405 	0x70405
+
+Disassembly of section .comment:
+
+00000000 <.comment>:
+   0:	4743433a 	bz.w	$w3,10cec <_stack_top+0xcec>
+   4:	20285562 	addi	t0,at,21858
+   8:	756e7475 	jalx	5b9d1d4 <_stack_top+0x5b8d1d4>
+   c:	2031302e 	addi	s1,at,12334
+  10:	332e302d 	andi	t6,t9,0x302d
+  14:	31756275 	andi	s5,t3,0x6275
+  18:	6e747531 	0x6e747531
+  1c:	29203130 	slti	zero,t1,12592
+  20:	2e332e30 	sltiu	s3,s1,11824
+	...

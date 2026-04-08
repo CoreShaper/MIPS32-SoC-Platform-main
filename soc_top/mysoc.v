@@ -1,42 +1,128 @@
 `include "mydefines.v"
 
-module mysoc(
-	    input wire clk,
-	    input wire rst,
-	    output wire cpu_test,
-	    inout wire GPIO01
-	);
-	  wire [5:0] int;
-	  wire timer_int_o;
-	
+module mysoc (
+    input  wire         clk,
+    input  wire         rst,
+    output wire         cpu_test,
+    inout  wire         GPIO01
+);
+
+    // ============================================================
+    // 中断信号（仅连接定时器中断）
+    // ============================================================
+    wire [5:0] Inter;
+    wire       timer_int_o;
+    assign Inter = {5'b0, timer_int_o};
+
+    // ============================================================
+    // CPU 与存储器的连接信号
+    // ============================================================
+    wire                  inst_ce;
+    wire [`InstAddrBus]   inst_addr;
+    wire [`InstBus]       inst_data;
+    wire                  inst_stallreq;      // 固定为 0
+
+    wire                  data_ce;
+    wire [`DataAddrBus]   data_addr;
+    wire                  data_we;
+    wire [3:0]            data_sel;
+    wire [`DataBus]       data_wdata;
+    wire [`DataBus]       data_rdata;
+    wire                  data_stallreq;      // 固定为 0
+
+    assign inst_stallreq = 1'b0;
+    assign data_stallreq = 1'b0;
+
+    // ============================================================
+    // 实例化 openmips CPU
+    // ============================================================
+    openmips openmips0 (
+        .clk              (clk),
+        .rst              (rst),
+        .int_i            (Inter),
+        .timer_int_o      (timer_int_o),
+        .cpu_test         (cpu_test),
+
+        // 指令接口
+        .inst_ce_o        (inst_ce),
+        .inst_addr_o      (inst_addr),
+        .inst_data_i      (inst_data),
+        .inst_stallreq_i  (inst_stallreq),
+
+        // 数据接口
+        .data_ce_o        (data_ce),
+        .data_addr_o      (data_addr),
+        .data_we_o        (data_we),
+        .data_sel_o       (data_sel),
+        .data_wdata_o     (data_wdata),      // 注意信号名匹配
+        .data_rdata_i     (data_rdata),
+        .data_stallreq_i  (data_stallreq)
+    );
+
+    // ============================================================
+    // 地址译码与仿真控制寄存器
+    // ============================================================
+    reg  [31:0] sim_ctrl_reg;
+    wire        is_sim_ctrl_addr;
+
+    assign is_sim_ctrl_addr = (data_addr == 32'hFFFFFFF0) && data_ce;
+
+    // 写操作（异步复位，同步写）
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            sim_ctrl_reg <= 32'h0;
+        end else if (data_ce && data_we && is_sim_ctrl_addr) begin
+            sim_ctrl_reg <= data_wdata;      // 使用 data_wdata 而非 data_data_o
+        end
+    end
+
+    // 读操作：返回寄存器值（可根据需要改为返回 0）
+     assign data_rdata = is_sim_ctrl_addr ? 32'h0 : ram_rdata;   // 原写法
 
 
-  assign int = {5'b00000, timer_int_o};
+    // ============================================================
+    // 双口 RAM 接口信号（屏蔽仿真控制寄存器地址）
+    // ============================================================
+    wire        ram_ce;
+    wire        ram_we;
+    wire [3:0]  ram_sel;
+    wire [31:0] ram_addr;
+    wire [31:0] ram_wdata;
+    wire [31:0] ram_rdata;
 
-  // Instantiate openmips module
-  openmips openmips0(
-      .clk(clk),
-      .rst(rst),
-      .int_i(int),
-      .timer_int_o(timer_int_o),
-      .cpu_test(cpu_test),
-             // 指令存储器接口
-        .inst_ce_o(inst_ce),
-        .inst_addr_o(inst_addr),
-        .inst_data_i(inst_data),
-        .inst_stallreq_i(inst_stallreq),
+    assign ram_ce    = data_ce && !is_sim_ctrl_addr;
+    assign ram_we    = data_we && !is_sim_ctrl_addr;
+    assign ram_sel   = data_sel;
+    assign ram_addr  = data_addr;
+    assign ram_wdata = data_wdata;           // 使用 data_wdata
 
-        // 数据存储器接口
-        .data_ce_o(data_ce),
-        .data_addr_o(data_addr),
-        .data_we_o(data_we),
-        .data_sel_o(data_sel),
-        .data_data_o(data_data_o),
-        .data_data_i(data_data_i),
-        .data_stallreq_i(data_stallreq)
+    // ============================================================
+    // 双口 RAM 实例化
+    // ============================================================
+    dual_port_ram #(
+        .ADDR_WIDTH(32),
+        .DATA_WIDTH(32),
+        .MEM_DEPTH(16384)
+    ) u_ram (
+        .clk      (clk),
 
+        // 指令端口
+        .i_ce     (inst_ce),
+        .i_addr   (inst_addr),
+        .i_rdata  (inst_data),
 
-	  );
-	
-	    
-    endmodule
+        // 数据端口
+        .d_ce     (ram_ce),
+        .d_we     (ram_we),
+        .d_sel    (ram_sel),
+        .d_addr   (ram_addr),
+        .d_wdata  (ram_wdata),
+        .d_rdata  (ram_rdata)
+    );
+
+    // ============================================================
+    // GPIO 示例
+    // ============================================================
+    assign GPIO01 = 1'b0;
+
+endmodule
