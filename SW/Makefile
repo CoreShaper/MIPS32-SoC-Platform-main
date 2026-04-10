@@ -47,9 +47,9 @@ $(TARGET).dis: $(TARGET).elf
 $(TARGET).bin: $(TARGET).elf
 	$(OBJCOPY) -O binary $< $@
 
-# 生成 Verilog $readmemh 格式的 hex 文件
+# 生成 Verilog $readmemh 格式的 hex 文件（保持原始字节顺序）
 $(TARGET).hex: $(TARGET).bin
-	hexdump -v -e '1/4 "%08x\n"' $< > $@
+	perl -e 'while(read(STDIN,$$buf,4)){print unpack("H8",$$buf)."\n"}' < $< > $@
 
 # 生成 Verilog $readmemb 格式的 mem 文件 (使用 perl 解决二进制输出)
 $(TARGET).mem: $(TARGET).bin

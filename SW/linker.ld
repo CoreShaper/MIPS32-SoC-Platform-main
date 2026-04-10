@@ -1,4 +1,4 @@
-OUTPUT_FORMAT("elf32-tradlittlemips", "elf32-tradbigmips", "elf32-tradlittlemips")
+OUTPUT_FORMAT("elf32-tradbigmips")
 OUTPUT_ARCH(mips)
 ENTRY(_start)
 

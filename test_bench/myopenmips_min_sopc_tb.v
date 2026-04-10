@@ -44,7 +44,7 @@ module myopenmips_min_sopc_tb();
         $display("\n========================================");
         $display("     SIMULATION TIMEOUT (FAIL)");
         $display("========================================\n");
-        $stop;
+        $finish;
     end
 
     // VCD 波形记录

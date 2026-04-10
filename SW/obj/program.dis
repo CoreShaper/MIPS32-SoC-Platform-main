@@ -5,46 +5,57 @@ obj/program.elf：     文件格式 elf32-tradbigmips
 Disassembly of section .text:
 
 00000000 <_start>:
-   0:	3c1d0001 	lui	sp,0x1
-   4:	27bd0000 	addiu	sp,sp,0
-   8:	3c080000 	lui	t0,0x0
-   c:	25080080 	addiu	t0,t0,128
-  10:	3c090000 	lui	t1,0x0
-  14:	25290080 	addiu	t1,t1,128
-  18:	ad000000 	sw	zero,0(t0)
-  1c:	25080004 	addiu	t0,t0,4
-  20:	1509fffd 	bne	t0,t1,18 <_start+0x18>
-  24:	00000000 	nop
-  28:	0c000010 	jal	40 <main>
-  2c:	00000000 	nop
-  30:	00000000 	nop
-  34:	0800000d 	j	34 <_start+0x34>
-  38:	00000000 	nop
-  3c:	00000000 	nop
+   0:	241d1000 	li	sp,4096
+   4:	24080080 	li	t0,128
+   8:	24090080 	li	t1,128
 
-00000040 <main>:
-  40:	24020001 	li	v0,1
-  44:	ac02fff0 	sw	v0,-16(zero)
-  48:	1000ffff 	b	48 <main+0x8>
-  4c:	00000000 	nop
+0000000c <loop>:
+   c:	ad000000 	sw	zero,0(t0)
+  10:	25080004 	addiu	t0,t0,4
+  14:	1509fffd 	bne	t0,t1,c <loop>
+  18:	00000000 	nop
+  1c:	00000000 	nop
+
+00000020 <pass>:
+  20:	240afff0 	li	t2,-16
+  24:	240b0001 	li	t3,1
+  28:	08000010 	j	40 <end>
+  2c:	ad4b0000 	sw	t3,0(t2)
+  30:	00000000 	nop
+
+00000034 <fail>:
+  34:	240afff0 	li	t2,-16
+  38:	240b0002 	li	t3,2
+  3c:	ad4b0000 	sw	t3,0(t2)
+
+00000040 <end>:
+  40:	08000010 	j	40 <end>
+  44:	00000000 	nop
+	...
+
+00000050 <main>:
+  50:	24020001 	li	v0,1
+  54:	ac02fff0 	sw	v0,-16(zero)
+  58:	1000ffff 	b	58 <main+0x8>
+  5c:	00000000 	nop
 
 Disassembly of section .reginfo:
 
-00000050 <.reginfo>:
-  50:	b0000300 	0xb0000300
+00000060 <.reginfo>:
+  60:	20000f00 	addi	zero,zero,3840
 	...
 
 Disassembly of section .MIPS.abiflags:
 
-00000068 <__bss_end-0x18>:
-  68:	00002002 	srl	a0,zero,0x0
-  6c:	01010005 	lsa	zero,t0,at,0x1
+00000078 <__bss_end-0x18>:
+  78:	00002002 	srl	a0,zero,0x0
+  7c:	01010005 	lsa	zero,t0,at,0x1
 	...
 
 Disassembly of section .pdr:
 
 00000000 <.pdr>:
-   0:	00000040 	ssnop
+   0:	00000050 	0x50
 	...
   18:	0000001d 	0x1d
   1c:	0000001f 	0x1f
