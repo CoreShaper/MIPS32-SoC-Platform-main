@@ -12,10 +12,14 @@ LDFLAGS = -EB -T linker.ld
 # 输出目录
 OBJDIR = obj
 
+# # 源文件
+# SRCS   = start.S main.c
+# OBJS   = $(addprefix $(OBJDIR)/, $(SRCS:.c=.o))
+# OBJS  := $(OBJS:.S=.o)
 # 源文件
-SRCS   = start.S main.c
-OBJS   = $(addprefix $(OBJDIR)/, $(SRCS:.c=.o))
-OBJS  := $(OBJS:.S=.o)
+SRCS   = cpu_selftest.S
+OBJS   = $(addprefix $(OBJDIR)/, $(SRCS:.S=.o))
+
 
 # 最终目标文件名 (放在 obj 目录下)
 TARGET = $(OBJDIR)/program

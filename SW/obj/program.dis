@@ -8,50 +8,163 @@ Disassembly of section .text:
    0:	3c1d0001 	lui	sp,0x1
    4:	27bd0000 	addiu	sp,sp,0
    8:	3c080000 	lui	t0,0x0
-   c:	25080090 	addiu	t0,t0,144
+   c:	25080230 	addiu	t0,t0,560
   10:	3c090000 	lui	t1,0x0
-  14:	25290090 	addiu	t1,t1,144
-  18:	11090007 	beq	t0,t1,38 <_start+0x38>
+  14:	25290230 	addiu	t1,t1,560
+  18:	11090007 	beq	t0,t1,38 <PASS_CODE+0x37>
   1c:	00000000 	nop
   20:	00000000 	nop
   24:	ad000000 	sw	zero,0(t0)
   28:	25080004 	addiu	t0,t0,4
-  2c:	1509fffd 	bne	t0,t1,24 <_start+0x24>
+  2c:	1509fffd 	bne	t0,t1,24 <PASS_CODE+0x23>
   30:	00000000 	nop
   34:	00000000 	nop
-  38:	0c000014 	jal	50 <main>
+  38:	0c00001b 	jal	6c <test_logic>
   3c:	00000000 	nop
   40:	00000000 	nop
-  44:	08000011 	j	44 <_start+0x44>
-  48:	00000000 	nop
+  44:	0c000017 	jal	5c <report_result>
+  48:	24040001 	li	a0,1
   4c:	00000000 	nop
 
-00000050 <main>:
-  50:	24020001 	li	v0,1
-  54:	ac02fff0 	sw	v0,-16(zero)
-  58:	1000ffff 	b	58 <main+0x8>
-  5c:	00000000 	nop
+00000050 <pass_loop>:
+  50:	08000014 	j	50 <pass_loop>
+  54:	00000000 	nop
+  58:	00000000 	nop
+
+0000005c <report_result>:
+  5c:	ac04fff0 	sw	a0,-16(zero)
+  60:	08000018 	j	60 <report_result+0x4>
+  64:	00000000 	nop
+  68:	00000000 	nop
+
+0000006c <test_logic>:
+  6c:	3c085a5a 	lui	t0,0x5a5a
+  70:	35085a5a 	ori	t0,t0,0x5a5a
+  74:	3c09a5a5 	lui	t1,0xa5a5
+  78:	3529a5a5 	ori	t1,t1,0xa5a5
+  7c:	01095024 	and	t2,t0,t1
+  80:	240b0000 	li	t3,0
+  84:	154b003b 	bne	t2,t3,174 <fail_logic_1>
+  88:	00000000 	nop
+  8c:	00000000 	nop
+  90:	3c085a5a 	lui	t0,0x5a5a
+  94:	35085a5a 	ori	t0,t0,0x5a5a
+  98:	3c09a5a5 	lui	t1,0xa5a5
+  9c:	3529a5a5 	ori	t1,t1,0xa5a5
+  a0:	01095025 	or	t2,t0,t1
+  a4:	240bffff 	li	t3,-1
+  a8:	154b0036 	bne	t2,t3,184 <fail_logic_2>
+  ac:	00000000 	nop
+  b0:	00000000 	nop
+  b4:	3c085a5a 	lui	t0,0x5a5a
+  b8:	35085a5a 	ori	t0,t0,0x5a5a
+  bc:	3c09a5a5 	lui	t1,0xa5a5
+  c0:	3529a5a5 	ori	t1,t1,0xa5a5
+  c4:	01095026 	xor	t2,t0,t1
+  c8:	240bffff 	li	t3,-1
+  cc:	154b0031 	bne	t2,t3,194 <fail_logic_3>
+  d0:	00000000 	nop
+  d4:	00000000 	nop
+  d8:	3c085a5a 	lui	t0,0x5a5a
+  dc:	35085a5a 	ori	t0,t0,0x5a5a
+  e0:	3c09a5a5 	lui	t1,0xa5a5
+  e4:	3529a5a5 	ori	t1,t1,0xa5a5
+  e8:	01095027 	nor	t2,t0,t1
+  ec:	240b0000 	li	t3,0
+  f0:	154b002c 	bne	t2,t3,1a4 <fail_logic_4>
+  f4:	00000000 	nop
+  f8:	00000000 	nop
+  fc:	3c081234 	lui	t0,0x1234
+ 100:	35085678 	ori	t0,t0,0x5678
+ 104:	3109ff00 	andi	t1,t0,0xff00
+ 108:	240a5600 	li	t2,22016
+ 10c:	152a0029 	bne	t1,t2,1b4 <fail_logic_5>
+ 110:	00000000 	nop
+ 114:	00000000 	nop
+ 118:	3c081234 	lui	t0,0x1234
+ 11c:	35085678 	ori	t0,t0,0x5678
+ 120:	350900ff 	ori	t1,t0,0xff
+ 124:	3c0a1234 	lui	t2,0x1234
+ 128:	354a56ff 	ori	t2,t2,0x56ff
+ 12c:	152a0025 	bne	t1,t2,1c4 <fail_logic_6>
+ 130:	00000000 	nop
+ 134:	00000000 	nop
+ 138:	3c081234 	lui	t0,0x1234
+ 13c:	35085678 	ori	t0,t0,0x5678
+ 140:	3909ffff 	xori	t1,t0,0xffff
+ 144:	3c0aedcb 	lui	t2,0xedcb
+ 148:	354aa987 	ori	t2,t2,0xa987
+ 14c:	152a0021 	bne	t1,t2,1d4 <fail_logic_7>
+ 150:	00000000 	nop
+ 154:	00000000 	nop
+ 158:	3c09dead 	lui	t1,0xdead
+ 15c:	3c0adead 	lui	t2,0xdead
+ 160:	152a0020 	bne	t1,t2,1e4 <fail_logic_8>
+ 164:	00000000 	nop
+ 168:	03e00008 	jr	ra
+ 16c:	00000000 	nop
+ 170:	00000000 	nop
+
+00000174 <fail_logic_1>:
+ 174:	3c04dead 	lui	a0,0xdead
+ 178:	0c000017 	jal	5c <report_result>
+ 17c:	34841101 	ori	a0,a0,0x1101
+ 180:	00000000 	nop
+
+00000184 <fail_logic_2>:
+ 184:	3c04dead 	lui	a0,0xdead
+ 188:	0c000017 	jal	5c <report_result>
+ 18c:	34841102 	ori	a0,a0,0x1102
+ 190:	00000000 	nop
+
+00000194 <fail_logic_3>:
+ 194:	3c04dead 	lui	a0,0xdead
+ 198:	0c000017 	jal	5c <report_result>
+ 19c:	34841103 	ori	a0,a0,0x1103
+ 1a0:	00000000 	nop
+
+000001a4 <fail_logic_4>:
+ 1a4:	3c04dead 	lui	a0,0xdead
+ 1a8:	0c000017 	jal	5c <report_result>
+ 1ac:	34841104 	ori	a0,a0,0x1104
+ 1b0:	00000000 	nop
+
+000001b4 <fail_logic_5>:
+ 1b4:	3c04dead 	lui	a0,0xdead
+ 1b8:	0c000017 	jal	5c <report_result>
+ 1bc:	34841105 	ori	a0,a0,0x1105
+ 1c0:	00000000 	nop
+
+000001c4 <fail_logic_6>:
+ 1c4:	3c04dead 	lui	a0,0xdead
+ 1c8:	0c000017 	jal	5c <report_result>
+ 1cc:	34841106 	ori	a0,a0,0x1106
+ 1d0:	00000000 	nop
+
+000001d4 <fail_logic_7>:
+ 1d4:	3c04dead 	lui	a0,0xdead
+ 1d8:	0c000017 	jal	5c <report_result>
+ 1dc:	34841107 	ori	a0,a0,0x1107
+ 1e0:	00000000 	nop
+
+000001e4 <fail_logic_8>:
+ 1e4:	3c04dead 	lui	a0,0xdead
+ 1e8:	0c000017 	jal	5c <report_result>
+ 1ec:	34841108 	ori	a0,a0,0x1108
+	...
 
 Disassembly of section .reginfo:
 
-00000060 <.reginfo>:
-  60:	b0000300 	0xb0000300
+00000200 <.reginfo>:
+ 200:	b0000f10 	0xb0000f10
 	...
 
 Disassembly of section .MIPS.abiflags:
 
-00000078 <__bss_end-0x18>:
-  78:	00002002 	srl	a0,zero,0x0
-  7c:	01010005 	lsa	zero,t0,at,0x1
+00000218 <__bss_end-0x18>:
+ 218:	00002002 	srl	a0,zero,0x0
+ 21c:	01010005 	lsa	zero,t0,at,0x1
 	...
-
-Disassembly of section .pdr:
-
-00000000 <.pdr>:
-   0:	00000050 	0x50
-	...
-  18:	0000001d 	0x1d
-  1c:	0000001f 	0x1f
 
 Disassembly of section .gnu.attributes:
 
@@ -60,17 +173,3 @@ Disassembly of section .gnu.attributes:
    4:	0f676e75 	jal	d9db9d4 <_stack_top+0xd9cb9d4>
    8:	00010000 	sll	zero,at,0x0
    c:	00070405 	0x70405
-
-Disassembly of section .comment:
-
-00000000 <.comment>:
-   0:	4743433a 	bz.w	$w3,10cec <_stack_top+0xcec>
-   4:	20285562 	addi	t0,at,21858
-   8:	756e7475 	jalx	5b9d1d4 <_stack_top+0x5b8d1d4>
-   c:	2031302e 	addi	s1,at,12334
-  10:	332e302d 	andi	t6,t9,0x302d
-  14:	31756275 	andi	s5,t3,0x6275
-  18:	6e747531 	0x6e747531
-  1c:	29203130 	slti	zero,t1,12592
-  20:	2e332e30 	sltiu	s3,s1,11824
-	...

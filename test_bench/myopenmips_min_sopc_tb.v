@@ -23,20 +23,34 @@ module myopenmips_min_sopc_tb();
         #195 rst = `RstDisable;
     end
 
-    // 仿真自动结束检测
-    always @(posedge CLOCK_50) begin
-        if (sim_ctrl == 32'h00000001) begin
-            $display("\n========================================");
-            $display("         TEST PASSED!");
-            $display("========================================\n");
-            $finish;
-        end else if (sim_ctrl == 32'h00000002) begin
-            $display("\n========================================");
-            $display("         TEST FAILED!");
-            $display("========================================\n");
-            $finish;
-        end
+always @(posedge CLOCK_50) begin
+    if (sim_ctrl == 32'h00000001) begin
+        $display("\n========================================");
+        $display("         TEST PASSED!");
+        $display("========================================\n");
+        $finish;
+    end else if ((sim_ctrl & 32'hFFFF0000) == 32'hDEAD0000) begin
+        // 解析错误码
+        $display("\n========================================");
+        $display("         TEST FAILED!");
+        $display("         Error code: %08h", sim_ctrl);
+        // 模块号解析
+        case (sim_ctrl[15:8])
+            8'h11: $display("         Module: LOGIC");
+            8'h12: $display("         Module: SHIFT");
+            8'h13: $display("         Module: MOVE");
+            8'h14: $display("         Module: ARITH");
+            8'h15: $display("         Module: BRANCH");
+            8'h16: $display("         Module: LOAD/STORE");
+            8'h17: $display("         Module: HILO");
+            8'h18: $display("         Module: CP0/EXCEPTION");
+            default: $display("         Module: UNKNOWN");
+        endcase
+        $display("         Subcase: %02h", sim_ctrl[7:0]);
+        $display("========================================\n");
+        $finish;
     end
+end
 
     // 超时保护（可选，建议保留以防程序跑飞）
     initial begin
