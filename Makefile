@@ -1,60 +1,76 @@
-# 仿真 Makefile
-# 使用方法：make -f Makefile.sim [compile|run|wave|clean]
+# ============================================================================
+# 根目录 Makefile
+# 功能：先编译 SW 目录下的测试程序，再调用 Makefile.sim 完成仿真
+# 用法：
+#   make           - 编译 SW + 仿真
+#   make sim       - 同上
+#   make sw        - 仅编译 SW
+#   make run       - 仅运行仿真（假设 simv 已存在）
+#   make wave      - 打开波形
+#   make clean     - 清理 SW 和仿真生成的所有文件
+#   make rebuild   - 完全重新编译
+# ============================================================================
 
-IVL = iverilog
-VVP = vvp
-GTKWAVE = gtkwave
+# 子目录名称
+SW_DIR = SW
 
-# 目录定义
-RTL_DIR = soc_top
-MIPS_DIR = soc_top/mips
-TB_DIR = test_bench
+# 仿真 Makefile 名称
+SIM_MK = Makefile.sim
 
-# Include 路径
-INC = -I $(MIPS_DIR) -I $(RTL_DIR)
+# ----------------------------------------------------------------------------
+# 默认目标：编译 SW 并运行仿真
+# ----------------------------------------------------------------------------
+.PHONY: all sim
+all: sim
+sim:
+	$(MAKE) -C $(SW_DIR)
+	$(MAKE) -f $(SIM_MK) run
 
-# 顶层模块名
-TOP_MODULE = myopenmips_min_sopc_tb
+# ----------------------------------------------------------------------------
+# 仅编译 SW
+# ----------------------------------------------------------------------------
+.PHONY: sw
+sw:
+	$(MAKE) -C $(SW_DIR)
 
-# 输出可执行文件名
-SIM_EXE = simv
+# ----------------------------------------------------------------------------
+# 仅运行仿真（不重新编译 SW，但会检查 simv 是否存在）
+# ----------------------------------------------------------------------------
+.PHONY: run
+run:
+	$(MAKE) -f $(SIM_MK) run
 
-# 波形文件
-WAVE = waveform.vcd
-
-# 文件列表
-FILELIST = filelist.f
-
-# 所有源文件（从 filelist.f 读取 + testbench）
-SRCS = $(shell cat $(FILELIST)) $(TB_DIR)/myopenmips_min_sopc_tb.v
-
-# 默认目标：编译并运行
-all: run
-
-# 编译
-compile: $(SIM_EXE)
-
-$(SIM_EXE): $(SRCS)
-	$(IVL) -o $@ -s $(TOP_MODULE) $(INC) $(SRCS)
-
-# 运行仿真
-run: $(SIM_EXE)
-	$(VVP) $(SIM_EXE)
-
+# ----------------------------------------------------------------------------
 # 查看波形
-wave: $(WAVE)
-	$(GTKWAVE) $(WAVE) &
+# ----------------------------------------------------------------------------
+.PHONY: wave
+wave:
+	$(MAKE) -f $(SIM_MK) wave
 
+# ----------------------------------------------------------------------------
 # 清理
+# ----------------------------------------------------------------------------
+.PHONY: clean
 clean:
-	rm -f $(SIM_EXE) $(WAVE)
+	$(MAKE) -C $(SW_DIR) clean
+	$(MAKE) -f $(SIM_MK) clean
 
+# ----------------------------------------------------------------------------
 # 完全重新编译
-rebuild: clean compile
+# ----------------------------------------------------------------------------
+.PHONY: rebuild
+rebuild: clean sim
 
-# 显示源文件列表（调试用）
-show_srcs:
-	@echo "Source files:"
-	@echo "$(SRCS)" | tr ' ' '\n'
-
-.PHONY: all compile run wave clean rebuild show_srcs
+# ----------------------------------------------------------------------------
+# 帮助
+# ----------------------------------------------------------------------------
+.PHONY: help
+help:
+	@echo "Available targets:"
+	@echo "  make        - Compile SW and run simulation"
+	@echo "  make sim    - Same as above"
+	@echo "  make sw     - Only compile SW"
+	@echo "  make run    - Only run simulation (if simv exists)"
+	@echo "  make wave   - Open waveform viewer"
+	@echo "  make clean  - Delete all generated files"
+	@echo "  make rebuild- Clean + compile + run"

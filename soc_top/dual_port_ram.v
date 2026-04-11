@@ -41,17 +41,32 @@ module dual_port_ram #(
     // 指令端口：组合逻辑读（无时钟）
     assign i_rdata = i_ce ? mem[i_addr[ADDR_WIDTH-1:2]] : {DATA_WIDTH{1'b0}};
 
-    // 数据端口：时序逻辑读写（带字节使能）
-    always @(posedge clk) begin
-        if (d_ce) begin
-            if (d_we) begin
-                if (d_sel[3]) mem[d_addr[ADDR_WIDTH-1:2]][31:24] <= d_wdata[31:24];
-                if (d_sel[2]) mem[d_addr[ADDR_WIDTH-1:2]][23:16] <= d_wdata[23:16];
-                if (d_sel[1]) mem[d_addr[ADDR_WIDTH-1:2]][15: 8] <= d_wdata[15: 8];
-                if (d_sel[0]) mem[d_addr[ADDR_WIDTH-1:2]][ 7: 0] <= d_wdata[ 7: 0];
-            end
-            d_rdata <= mem[d_addr[ADDR_WIDTH-1:2]];
-        end
+// 写操作（时序）
+always @(posedge clk) begin
+    if (d_ce && d_we) begin
+        if (d_sel[3]) mem[d_addr[ADDR_WIDTH-1:2]][31:24] <= d_wdata[31:24];
+        if (d_sel[2]) mem[d_addr[ADDR_WIDTH-1:2]][23:16] <= d_wdata[23:16];
+        if (d_sel[1]) mem[d_addr[ADDR_WIDTH-1:2]][15: 8] <= d_wdata[15: 8];
+        if (d_sel[0]) mem[d_addr[ADDR_WIDTH-1:2]][ 7: 0] <= d_wdata[ 7: 0];
     end
+end
+
+// 读操作（组合逻辑，带写后读转发）
+always @(*) begin
+    if (d_ce) begin
+        if (d_we) begin
+            // 同一周期写且读：转发写数据（使能字节用 d_wdata，未使能字节用 mem 旧值）
+            d_rdata = { (d_sel[3] ? d_wdata[31:24] : mem[d_addr[ADDR_WIDTH-1:2]][31:24]),
+                        (d_sel[2] ? d_wdata[23:16] : mem[d_addr[ADDR_WIDTH-1:2]][23:16]),
+                        (d_sel[1] ? d_wdata[15: 8] : mem[d_addr[ADDR_WIDTH-1:2]][15: 8]),
+                        (d_sel[0] ? d_wdata[ 7: 0] : mem[d_addr[ADDR_WIDTH-1:2]][ 7: 0]) };
+        end else begin
+            // 纯读
+            d_rdata = mem[d_addr[ADDR_WIDTH-1:2]];
+        end
+    end else begin
+        d_rdata = 32'b0;   // 未使能时输出0，可根据需求改为保持
+    end
+end
 
 endmodule

@@ -46,7 +46,7 @@ always @(posedge CLOCK_50) begin
             8'h18: $display("         Module: CP0/EXCEPTION");
             default: $display("         Module: UNKNOWN");
         endcase
-        $display("         Subcase: %02h", sim_ctrl[7:0]);
+        $display("         Subcase: %02d", sim_ctrl[7:0]);
         $display("========================================\n");
         $finish;
     end
