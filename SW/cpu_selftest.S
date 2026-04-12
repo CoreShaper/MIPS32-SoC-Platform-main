@@ -22,6 +22,8 @@ ll_sc_var:
 syscall_flag:   .word 0
 trap_flag:      .word 0
 ov_flag:        .word 0
+timer_int_flag:   .word 0
+int_count:        .word 0   # 可选，用于统计中断次数
 
 # ============================================================
 # 异常向量表
@@ -81,7 +83,6 @@ _start:
     
      jal   test_shift
      nop
-    # 后续模块测试调用暂时注释，待逐个添加
      jal   test_move
      nop
      jal   test_arith
@@ -100,6 +101,9 @@ _start:
      nop
      jal   test_pipeline
      nop
+     jal   test_timer_interrupt
+     nop
+
 
 
     # 全部通过
@@ -2148,8 +2152,85 @@ fail_pipeline_10: li $a0, 0xDEAD190A; jal report_result; nop
 
 
 
+# ============================================================
+# 模块测试：定时器中断完整响应流程
+# 错误码前缀：0xDEAD1A00
+# ============================================================
+test_timer_interrupt:
+    .set noreorder
+    # ------------------ 1. 初始化 CP0 和定时器 ------------------
+    # Status: IE=1, IM0=1 (定时器中断掩码)
+    li    $t0, 0x00000401          # bit 10 和 bit 0 置 1
+    mtc0  $t0, $12
 
+    # 清除 Cause 残余
+    mtc0  $zero, $13
 
+    # 设置 Compare 为当前 Count + 较小值（例如 +200 周期）
+    mfc0  $t0, $9               # 读 Count
+    addiu $t0, $t0, 200         # 200 周期后触发中断
+    mtc0  $t0, $11
+
+    # ------------------ 2. 清标志，等待中断 ------------------
+    la    $t0, timer_int_flag
+    sw    $zero, 0($t0)
+
+    # 循环等待，直到标志被中断处理程序置 1
+wait_timer:
+    lw    $t1, 0($t0)
+    beq   $t1, $zero, wait_timer
+    nop
+
+    # ------------------ 3. 验证标志被正确置位 ------------------
+    li    $t2, 1
+    bne   $t1, $t2, fail_timer_int
+    nop
+
+    # ------------------ 4. 再次触发：验证中断连续响应 ------------------
+    # 错误码: 0xDEAD1A02 (可选，若第二次失败则单独上报)
+    # 清标志
+    la    $t0, timer_int_flag
+    sw    $zero, 0($t0)
+
+    # 重新配置 Compare，触发第二次中断
+    mfc0  $t0, $9               # 读当前 Count
+    addiu $t0, $t0, 200         # 200 周期后再次触发
+    mtc0  $t0, $11
+
+    # 确保 Status 仍然使能中断（如果之前未关闭）
+    li    $t0, 0x00000401
+    mtc0  $t0, $12
+
+    # 等待第二次中断
+wait_timer2:
+    la    $t0, timer_int_flag
+    lw    $t1, 0($t0)
+    beq   $t1, $zero, wait_timer2
+    nop
+
+    # 验证第二次标志被正确置位
+    lw    $t1, 0($t0)           # 再次加载，确保不是偶然
+    li    $t2, 1
+    bne   $t1, $t2, fail_timer_int2
+    nop
+
+    # 关闭中断
+    li    $t0, 0x00000000
+    mtc0  $t0, $12
+
+    # 通过
+    .set reorder
+    jr    $ra
+    nop
+
+fail_timer_int:
+    li    $a0, 0xDEAD1A01
+    jal   report_result
+    nop
+fail_timer_int2:
+    li    $a0, 0xDEAD1A02
+    jal   report_result
+    nop
 
 
 
@@ -2230,9 +2311,29 @@ _unknown_exception:
     nop
 
 _int_handler:
-    # 处理中断源 / 清中断
-    # 中断一般不改 EPC
-    j      _exception_return
+    # 检查是否为定时器中断（Cause.IP0，位 10）
+    mfc0  $k0, $13
+    andi  $k0, $k0, 0x00000400    # IP0 (bit 10)
+    beq   $k0, $zero, 1f
+    nop
+
+    # 是定时器中断：设置标志
+    la    $k1, timer_int_flag
+    li    $k0, 1
+    sw    $k0, 0($k1)
+
+    # 清除定时器中断：写 Compare 推迟下次中断，同时写 Cause.IP0 清零
+    mfc0  $k0, $9                 # 读 Count
+    addiu $k0, $k0, 1000          # 推迟 1000 周期
+    mtc0  $k0, $11                # 写 Compare
+
+    # 清除 Cause.IP0（写 1 清零）
+    mfc0  $k0, $13
+    ori   $k0, $k0, 0x00000400    # IP0 写 1 清零
+    mtc0  $k0, $13
+
+1:
+    j     _exception_return
     nop
 
 _syscall_handler:

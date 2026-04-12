@@ -8,9 +8,9 @@ Disassembly of section .text.start:
    0:	3c1d0001 	lui	sp,0x1
    4:	27bd0000 	addiu	sp,sp,0
    8:	3c080000 	lui	t0,0x0
-   c:	25082170 	addiu	t0,t0,8560
+   c:	25082270 	addiu	t0,t0,8816
   10:	3c090000 	lui	t1,0x0
-  14:	25292170 	addiu	t1,t1,8560
+  14:	25292270 	addiu	t1,t1,8816
   18:	11090007 	beq	t0,t1,38 <PASS_CODE+0x37>
   1c:	00000000 	nop
   20:	00000000 	nop
@@ -41,26 +41,28 @@ Disassembly of section .text.start:
   84:	00000000 	nop
   88:	0c00072d 	jal	1cb4 <test_pipeline>
   8c:	00000000 	nop
-  90:	00000000 	nop
-  94:	0c00002b 	jal	ac <report_result>
-  98:	24040001 	li	a0,1
-  9c:	00000000 	nop
-
-000000a0 <pass_loop>:
-  a0:	08000028 	j	a0 <pass_loop>
+  90:	0c0007ba 	jal	1ee8 <test_timer_interrupt>
+  94:	00000000 	nop
+  98:	00000000 	nop
+  9c:	0c00002d 	jal	b4 <report_result>
+  a0:	24040001 	li	a0,1
   a4:	00000000 	nop
-  a8:	00000000 	nop
 
-000000ac <report_result>:
-  ac:	ac04fff0 	sw	a0,-16(zero)
-  b0:	0800002c 	j	b0 <report_result+0x4>
-  b4:	00000000 	nop
-  b8:	00000000 	nop
+000000a8 <pass_loop>:
+  a8:	0800002a 	j	a8 <pass_loop>
+  ac:	00000000 	nop
+  b0:	00000000 	nop
+
+000000b4 <report_result>:
+  b4:	ac04fff0 	sw	a0,-16(zero)
+  b8:	0800002e 	j	b8 <report_result+0x4>
+  bc:	00000000 	nop
+  c0:	00000000 	nop
 
 Disassembly of section .exception:
 
 00000180 <exception_handler>:
- 180:	080007ba 	j	1ee8 <_exception_entry>
+ 180:	080007e7 	j	1f9c <_exception_entry>
  184:	00000000 	nop
  188:	00000000 	nop
 
@@ -184,91 +186,91 @@ Disassembly of section .text:
 
 000003c8 <fail_logic_1>:
      3c8:	3c04dead 	lui	a0,0xdead
-     3cc:	0c00002b 	jal	ac <report_result>
+     3cc:	0c00002d 	jal	b4 <report_result>
      3d0:	34841101 	ori	a0,a0,0x1101
      3d4:	00000000 	nop
 
 000003d8 <fail_logic_2>:
      3d8:	3c04dead 	lui	a0,0xdead
-     3dc:	0c00002b 	jal	ac <report_result>
+     3dc:	0c00002d 	jal	b4 <report_result>
      3e0:	34841102 	ori	a0,a0,0x1102
      3e4:	00000000 	nop
 
 000003e8 <fail_logic_3>:
      3e8:	3c04dead 	lui	a0,0xdead
-     3ec:	0c00002b 	jal	ac <report_result>
+     3ec:	0c00002d 	jal	b4 <report_result>
      3f0:	34841103 	ori	a0,a0,0x1103
      3f4:	00000000 	nop
 
 000003f8 <fail_logic_4>:
      3f8:	3c04dead 	lui	a0,0xdead
-     3fc:	0c00002b 	jal	ac <report_result>
+     3fc:	0c00002d 	jal	b4 <report_result>
      400:	34841104 	ori	a0,a0,0x1104
      404:	00000000 	nop
 
 00000408 <fail_logic_5>:
      408:	3c04dead 	lui	a0,0xdead
-     40c:	0c00002b 	jal	ac <report_result>
+     40c:	0c00002d 	jal	b4 <report_result>
      410:	34841105 	ori	a0,a0,0x1105
      414:	00000000 	nop
 
 00000418 <fail_logic_6>:
      418:	3c04dead 	lui	a0,0xdead
-     41c:	0c00002b 	jal	ac <report_result>
+     41c:	0c00002d 	jal	b4 <report_result>
      420:	34841106 	ori	a0,a0,0x1106
      424:	00000000 	nop
 
 00000428 <fail_logic_7>:
      428:	3c04dead 	lui	a0,0xdead
-     42c:	0c00002b 	jal	ac <report_result>
+     42c:	0c00002d 	jal	b4 <report_result>
      430:	34841107 	ori	a0,a0,0x1107
      434:	00000000 	nop
 
 00000438 <fail_logic_8>:
      438:	3c04dead 	lui	a0,0xdead
-     43c:	0c00002b 	jal	ac <report_result>
+     43c:	0c00002d 	jal	b4 <report_result>
      440:	34841108 	ori	a0,a0,0x1108
      444:	00000000 	nop
 
 00000448 <fail_logic_9>:
      448:	3c04dead 	lui	a0,0xdead
-     44c:	0c00002b 	jal	ac <report_result>
+     44c:	0c00002d 	jal	b4 <report_result>
      450:	34841109 	ori	a0,a0,0x1109
      454:	00000000 	nop
 
 00000458 <fail_logic_10>:
      458:	3c04dead 	lui	a0,0xdead
-     45c:	0c00002b 	jal	ac <report_result>
+     45c:	0c00002d 	jal	b4 <report_result>
      460:	3484110a 	ori	a0,a0,0x110a
      464:	00000000 	nop
 
 00000468 <fail_logic_11>:
      468:	3c04dead 	lui	a0,0xdead
-     46c:	0c00002b 	jal	ac <report_result>
+     46c:	0c00002d 	jal	b4 <report_result>
      470:	3484110b 	ori	a0,a0,0x110b
      474:	00000000 	nop
 
 00000478 <fail_logic_12>:
      478:	3c04dead 	lui	a0,0xdead
-     47c:	0c00002b 	jal	ac <report_result>
+     47c:	0c00002d 	jal	b4 <report_result>
      480:	3484110c 	ori	a0,a0,0x110c
      484:	00000000 	nop
 
 00000488 <fail_logic_13>:
      488:	3c04dead 	lui	a0,0xdead
-     48c:	0c00002b 	jal	ac <report_result>
+     48c:	0c00002d 	jal	b4 <report_result>
      490:	3484110d 	ori	a0,a0,0x110d
      494:	00000000 	nop
 
 00000498 <fail_logic_14>:
      498:	3c04dead 	lui	a0,0xdead
-     49c:	0c00002b 	jal	ac <report_result>
+     49c:	0c00002d 	jal	b4 <report_result>
      4a0:	3484110e 	ori	a0,a0,0x110e
      4a4:	00000000 	nop
 
 000004a8 <fail_logic_15>:
      4a8:	3c04dead 	lui	a0,0xdead
-     4ac:	0c00002b 	jal	ac <report_result>
+     4ac:	0c00002d 	jal	b4 <report_result>
      4b0:	3484110f 	ori	a0,a0,0x110f
      4b4:	00000000 	nop
 
@@ -354,67 +356,67 @@ Disassembly of section .text:
 
 000005f0 <fail_shift_1>:
      5f0:	3c04dead 	lui	a0,0xdead
-     5f4:	0c00002b 	jal	ac <report_result>
+     5f4:	0c00002d 	jal	b4 <report_result>
      5f8:	34841201 	ori	a0,a0,0x1201
      5fc:	00000000 	nop
 
 00000600 <fail_shift_2>:
      600:	3c04dead 	lui	a0,0xdead
-     604:	0c00002b 	jal	ac <report_result>
+     604:	0c00002d 	jal	b4 <report_result>
      608:	34841202 	ori	a0,a0,0x1202
      60c:	00000000 	nop
 
 00000610 <fail_shift_3>:
      610:	3c04dead 	lui	a0,0xdead
-     614:	0c00002b 	jal	ac <report_result>
+     614:	0c00002d 	jal	b4 <report_result>
      618:	34841203 	ori	a0,a0,0x1203
      61c:	00000000 	nop
 
 00000620 <fail_shift_4>:
      620:	3c04dead 	lui	a0,0xdead
-     624:	0c00002b 	jal	ac <report_result>
+     624:	0c00002d 	jal	b4 <report_result>
      628:	34841204 	ori	a0,a0,0x1204
      62c:	00000000 	nop
 
 00000630 <fail_shift_5>:
      630:	3c04dead 	lui	a0,0xdead
-     634:	0c00002b 	jal	ac <report_result>
+     634:	0c00002d 	jal	b4 <report_result>
      638:	34841205 	ori	a0,a0,0x1205
      63c:	00000000 	nop
 
 00000640 <fail_shift_6>:
      640:	3c04dead 	lui	a0,0xdead
-     644:	0c00002b 	jal	ac <report_result>
+     644:	0c00002d 	jal	b4 <report_result>
      648:	34841206 	ori	a0,a0,0x1206
      64c:	00000000 	nop
 
 00000650 <fail_shift_7>:
      650:	3c04dead 	lui	a0,0xdead
-     654:	0c00002b 	jal	ac <report_result>
+     654:	0c00002d 	jal	b4 <report_result>
      658:	34841207 	ori	a0,a0,0x1207
      65c:	00000000 	nop
 
 00000660 <fail_shift_8>:
      660:	3c04dead 	lui	a0,0xdead
-     664:	0c00002b 	jal	ac <report_result>
+     664:	0c00002d 	jal	b4 <report_result>
      668:	34841208 	ori	a0,a0,0x1208
      66c:	00000000 	nop
 
 00000670 <fail_shift_9>:
      670:	3c04dead 	lui	a0,0xdead
-     674:	0c00002b 	jal	ac <report_result>
+     674:	0c00002d 	jal	b4 <report_result>
      678:	34841209 	ori	a0,a0,0x1209
      67c:	00000000 	nop
 
 00000680 <fail_shift_10>:
      680:	3c04dead 	lui	a0,0xdead
-     684:	0c00002b 	jal	ac <report_result>
+     684:	0c00002d 	jal	b4 <report_result>
      688:	3484120a 	ori	a0,a0,0x120a
      68c:	00000000 	nop
 
 00000690 <fail_shift_11>:
      690:	3c04dead 	lui	a0,0xdead
-     694:	0c00002b 	jal	ac <report_result>
+     694:	0c00002d 	jal	b4 <report_result>
      698:	3484120b 	ori	a0,a0,0x120b
      69c:	00000000 	nop
 
@@ -486,37 +488,37 @@ Disassembly of section .text:
 
 000007a0 <fail_move_1>:
      7a0:	3c04dead 	lui	a0,0xdead
-     7a4:	0c00002b 	jal	ac <report_result>
+     7a4:	0c00002d 	jal	b4 <report_result>
      7a8:	34841301 	ori	a0,a0,0x1301
      7ac:	00000000 	nop
 
 000007b0 <fail_move_2>:
      7b0:	3c04dead 	lui	a0,0xdead
-     7b4:	0c00002b 	jal	ac <report_result>
+     7b4:	0c00002d 	jal	b4 <report_result>
      7b8:	34841302 	ori	a0,a0,0x1302
      7bc:	00000000 	nop
 
 000007c0 <fail_move_3>:
      7c0:	3c04dead 	lui	a0,0xdead
-     7c4:	0c00002b 	jal	ac <report_result>
+     7c4:	0c00002d 	jal	b4 <report_result>
      7c8:	34841303 	ori	a0,a0,0x1303
      7cc:	00000000 	nop
 
 000007d0 <fail_move_4>:
      7d0:	3c04dead 	lui	a0,0xdead
-     7d4:	0c00002b 	jal	ac <report_result>
+     7d4:	0c00002d 	jal	b4 <report_result>
      7d8:	34841304 	ori	a0,a0,0x1304
      7dc:	00000000 	nop
 
 000007e0 <fail_move_5>:
      7e0:	3c04dead 	lui	a0,0xdead
-     7e4:	0c00002b 	jal	ac <report_result>
+     7e4:	0c00002d 	jal	b4 <report_result>
      7e8:	34841305 	ori	a0,a0,0x1305
      7ec:	00000000 	nop
 
 000007f0 <fail_move_6>:
      7f0:	3c04dead 	lui	a0,0xdead
-     7f4:	0c00002b 	jal	ac <report_result>
+     7f4:	0c00002d 	jal	b4 <report_result>
      7f8:	34841306 	ori	a0,a0,0x1306
      7fc:	00000000 	nop
 
@@ -664,73 +666,73 @@ Disassembly of section .text:
 
 00000a30 <fail_hilo_1>:
      a30:	3c04dead 	lui	a0,0xdead
-     a34:	0c00002b 	jal	ac <report_result>
+     a34:	0c00002d 	jal	b4 <report_result>
      a38:	34841701 	ori	a0,a0,0x1701
      a3c:	00000000 	nop
 
 00000a40 <fail_hilo_2>:
      a40:	3c04dead 	lui	a0,0xdead
-     a44:	0c00002b 	jal	ac <report_result>
+     a44:	0c00002d 	jal	b4 <report_result>
      a48:	34841702 	ori	a0,a0,0x1702
      a4c:	00000000 	nop
 
 00000a50 <fail_hilo_3>:
      a50:	3c04dead 	lui	a0,0xdead
-     a54:	0c00002b 	jal	ac <report_result>
+     a54:	0c00002d 	jal	b4 <report_result>
      a58:	34841703 	ori	a0,a0,0x1703
      a5c:	00000000 	nop
 
 00000a60 <fail_hilo_4>:
      a60:	3c04dead 	lui	a0,0xdead
-     a64:	0c00002b 	jal	ac <report_result>
+     a64:	0c00002d 	jal	b4 <report_result>
      a68:	34841704 	ori	a0,a0,0x1704
      a6c:	00000000 	nop
 
 00000a70 <fail_hilo_5>:
      a70:	3c04dead 	lui	a0,0xdead
-     a74:	0c00002b 	jal	ac <report_result>
+     a74:	0c00002d 	jal	b4 <report_result>
      a78:	34841705 	ori	a0,a0,0x1705
      a7c:	00000000 	nop
 
 00000a80 <fail_hilo_6>:
      a80:	3c04dead 	lui	a0,0xdead
-     a84:	0c00002b 	jal	ac <report_result>
+     a84:	0c00002d 	jal	b4 <report_result>
      a88:	34841706 	ori	a0,a0,0x1706
      a8c:	00000000 	nop
 
 00000a90 <fail_hilo_7>:
      a90:	3c04dead 	lui	a0,0xdead
-     a94:	0c00002b 	jal	ac <report_result>
+     a94:	0c00002d 	jal	b4 <report_result>
      a98:	34841707 	ori	a0,a0,0x1707
      a9c:	00000000 	nop
 
 00000aa0 <fail_hilo_8>:
      aa0:	3c04dead 	lui	a0,0xdead
-     aa4:	0c00002b 	jal	ac <report_result>
+     aa4:	0c00002d 	jal	b4 <report_result>
      aa8:	34841708 	ori	a0,a0,0x1708
      aac:	00000000 	nop
 
 00000ab0 <fail_hilo_9>:
      ab0:	3c04dead 	lui	a0,0xdead
-     ab4:	0c00002b 	jal	ac <report_result>
+     ab4:	0c00002d 	jal	b4 <report_result>
      ab8:	34841709 	ori	a0,a0,0x1709
      abc:	00000000 	nop
 
 00000ac0 <fail_hilo_10>:
      ac0:	3c04dead 	lui	a0,0xdead
-     ac4:	0c00002b 	jal	ac <report_result>
+     ac4:	0c00002d 	jal	b4 <report_result>
      ac8:	3484170a 	ori	a0,a0,0x170a
      acc:	00000000 	nop
 
 00000ad0 <fail_hilo_11>:
      ad0:	3c04dead 	lui	a0,0xdead
-     ad4:	0c00002b 	jal	ac <report_result>
+     ad4:	0c00002d 	jal	b4 <report_result>
      ad8:	3484170b 	ori	a0,a0,0x170b
      adc:	00000000 	nop
 
 00000ae0 <fail_hilo_12>:
      ae0:	3c04dead 	lui	a0,0xdead
-     ae4:	0c00002b 	jal	ac <report_result>
+     ae4:	0c00002d 	jal	b4 <report_result>
      ae8:	3484170c 	ori	a0,a0,0x170c
      aec:	00000000 	nop
 
@@ -850,103 +852,103 @@ Disassembly of section .text:
 
 00000cb0 <fail_arith_1>:
      cb0:	3c04dead 	lui	a0,0xdead
-     cb4:	0c00002b 	jal	ac <report_result>
+     cb4:	0c00002d 	jal	b4 <report_result>
      cb8:	34841401 	ori	a0,a0,0x1401
      cbc:	00000000 	nop
 
 00000cc0 <fail_arith_2>:
      cc0:	3c04dead 	lui	a0,0xdead
-     cc4:	0c00002b 	jal	ac <report_result>
+     cc4:	0c00002d 	jal	b4 <report_result>
      cc8:	34841402 	ori	a0,a0,0x1402
      ccc:	00000000 	nop
 
 00000cd0 <fail_arith_3>:
      cd0:	3c04dead 	lui	a0,0xdead
-     cd4:	0c00002b 	jal	ac <report_result>
+     cd4:	0c00002d 	jal	b4 <report_result>
      cd8:	34841403 	ori	a0,a0,0x1403
      cdc:	00000000 	nop
 
 00000ce0 <fail_arith_4>:
      ce0:	3c04dead 	lui	a0,0xdead
-     ce4:	0c00002b 	jal	ac <report_result>
+     ce4:	0c00002d 	jal	b4 <report_result>
      ce8:	34841404 	ori	a0,a0,0x1404
      cec:	00000000 	nop
 
 00000cf0 <fail_arith_5>:
      cf0:	3c04dead 	lui	a0,0xdead
-     cf4:	0c00002b 	jal	ac <report_result>
+     cf4:	0c00002d 	jal	b4 <report_result>
      cf8:	34841405 	ori	a0,a0,0x1405
      cfc:	00000000 	nop
 
 00000d00 <fail_arith_6>:
      d00:	3c04dead 	lui	a0,0xdead
-     d04:	0c00002b 	jal	ac <report_result>
+     d04:	0c00002d 	jal	b4 <report_result>
      d08:	34841406 	ori	a0,a0,0x1406
      d0c:	00000000 	nop
 
 00000d10 <fail_arith_7>:
      d10:	3c04dead 	lui	a0,0xdead
-     d14:	0c00002b 	jal	ac <report_result>
+     d14:	0c00002d 	jal	b4 <report_result>
      d18:	34841407 	ori	a0,a0,0x1407
      d1c:	00000000 	nop
 
 00000d20 <fail_arith_8>:
      d20:	3c04dead 	lui	a0,0xdead
-     d24:	0c00002b 	jal	ac <report_result>
+     d24:	0c00002d 	jal	b4 <report_result>
      d28:	34841408 	ori	a0,a0,0x1408
      d2c:	00000000 	nop
 
 00000d30 <fail_arith_9>:
      d30:	3c04dead 	lui	a0,0xdead
-     d34:	0c00002b 	jal	ac <report_result>
+     d34:	0c00002d 	jal	b4 <report_result>
      d38:	34841409 	ori	a0,a0,0x1409
      d3c:	00000000 	nop
 
 00000d40 <fail_arith_10>:
      d40:	3c04dead 	lui	a0,0xdead
-     d44:	0c00002b 	jal	ac <report_result>
+     d44:	0c00002d 	jal	b4 <report_result>
      d48:	3484140a 	ori	a0,a0,0x140a
      d4c:	00000000 	nop
 
 00000d50 <fail_arith_11>:
      d50:	3c04dead 	lui	a0,0xdead
-     d54:	0c00002b 	jal	ac <report_result>
+     d54:	0c00002d 	jal	b4 <report_result>
      d58:	3484140b 	ori	a0,a0,0x140b
      d5c:	00000000 	nop
 
 00000d60 <fail_arith_12>:
      d60:	3c04dead 	lui	a0,0xdead
-     d64:	0c00002b 	jal	ac <report_result>
+     d64:	0c00002d 	jal	b4 <report_result>
      d68:	3484140c 	ori	a0,a0,0x140c
      d6c:	00000000 	nop
 
 00000d70 <fail_arith_13>:
      d70:	3c04dead 	lui	a0,0xdead
-     d74:	0c00002b 	jal	ac <report_result>
+     d74:	0c00002d 	jal	b4 <report_result>
      d78:	3484140d 	ori	a0,a0,0x140d
      d7c:	00000000 	nop
 
 00000d80 <fail_arith_14>:
      d80:	3c04dead 	lui	a0,0xdead
-     d84:	0c00002b 	jal	ac <report_result>
+     d84:	0c00002d 	jal	b4 <report_result>
      d88:	3484140e 	ori	a0,a0,0x140e
      d8c:	00000000 	nop
 
 00000d90 <fail_arith_15>:
      d90:	3c04dead 	lui	a0,0xdead
-     d94:	0c00002b 	jal	ac <report_result>
+     d94:	0c00002d 	jal	b4 <report_result>
      d98:	3484140f 	ori	a0,a0,0x140f
      d9c:	00000000 	nop
 
 00000da0 <fail_arith_16>:
      da0:	3c04dead 	lui	a0,0xdead
-     da4:	0c00002b 	jal	ac <report_result>
+     da4:	0c00002d 	jal	b4 <report_result>
      da8:	34841410 	ori	a0,a0,0x1410
      dac:	00000000 	nop
 
 00000db0 <fail_arith_17>:
      db0:	3c04dead 	lui	a0,0xdead
-     db4:	0c00002b 	jal	ac <report_result>
+     db4:	0c00002d 	jal	b4 <report_result>
      db8:	34841411 	ori	a0,a0,0x1411
      dbc:	00000000 	nop
 
@@ -1219,97 +1221,97 @@ Disassembly of section .text:
 
 0000112c <fail_branch_1>:
     112c:	3c04dead 	lui	a0,0xdead
-    1130:	0c00002b 	jal	ac <report_result>
+    1130:	0c00002d 	jal	b4 <report_result>
     1134:	34841501 	ori	a0,a0,0x1501
     1138:	00000000 	nop
 
 0000113c <fail_branch_2>:
     113c:	3c04dead 	lui	a0,0xdead
-    1140:	0c00002b 	jal	ac <report_result>
+    1140:	0c00002d 	jal	b4 <report_result>
     1144:	34841502 	ori	a0,a0,0x1502
     1148:	00000000 	nop
 
 0000114c <fail_branch_3>:
     114c:	3c04dead 	lui	a0,0xdead
-    1150:	0c00002b 	jal	ac <report_result>
+    1150:	0c00002d 	jal	b4 <report_result>
     1154:	34841503 	ori	a0,a0,0x1503
     1158:	00000000 	nop
 
 0000115c <fail_branch_4>:
     115c:	3c04dead 	lui	a0,0xdead
-    1160:	0c00002b 	jal	ac <report_result>
+    1160:	0c00002d 	jal	b4 <report_result>
     1164:	34841504 	ori	a0,a0,0x1504
     1168:	00000000 	nop
 
 0000116c <fail_branch_5>:
     116c:	3c04dead 	lui	a0,0xdead
-    1170:	0c00002b 	jal	ac <report_result>
+    1170:	0c00002d 	jal	b4 <report_result>
     1174:	34841505 	ori	a0,a0,0x1505
     1178:	00000000 	nop
 
 0000117c <fail_branch_6>:
     117c:	3c04dead 	lui	a0,0xdead
-    1180:	0c00002b 	jal	ac <report_result>
+    1180:	0c00002d 	jal	b4 <report_result>
     1184:	34841506 	ori	a0,a0,0x1506
     1188:	00000000 	nop
 
 0000118c <fail_branch_7>:
     118c:	3c04dead 	lui	a0,0xdead
-    1190:	0c00002b 	jal	ac <report_result>
+    1190:	0c00002d 	jal	b4 <report_result>
     1194:	34841507 	ori	a0,a0,0x1507
     1198:	00000000 	nop
 
 0000119c <fail_branch_8>:
     119c:	3c04dead 	lui	a0,0xdead
-    11a0:	0c00002b 	jal	ac <report_result>
+    11a0:	0c00002d 	jal	b4 <report_result>
     11a4:	34841508 	ori	a0,a0,0x1508
     11a8:	00000000 	nop
 
 000011ac <fail_branch_9>:
     11ac:	3c04dead 	lui	a0,0xdead
-    11b0:	0c00002b 	jal	ac <report_result>
+    11b0:	0c00002d 	jal	b4 <report_result>
     11b4:	34841509 	ori	a0,a0,0x1509
     11b8:	00000000 	nop
 
 000011bc <fail_branch_10>:
     11bc:	3c04dead 	lui	a0,0xdead
-    11c0:	0c00002b 	jal	ac <report_result>
+    11c0:	0c00002d 	jal	b4 <report_result>
     11c4:	3484150a 	ori	a0,a0,0x150a
     11c8:	00000000 	nop
 
 000011cc <fail_branch_11>:
     11cc:	3c04dead 	lui	a0,0xdead
-    11d0:	0c00002b 	jal	ac <report_result>
+    11d0:	0c00002d 	jal	b4 <report_result>
     11d4:	3484150b 	ori	a0,a0,0x150b
     11d8:	00000000 	nop
 
 000011dc <fail_branch_12>:
     11dc:	3c04dead 	lui	a0,0xdead
-    11e0:	0c00002b 	jal	ac <report_result>
+    11e0:	0c00002d 	jal	b4 <report_result>
     11e4:	3484150c 	ori	a0,a0,0x150c
     11e8:	00000000 	nop
 
 000011ec <fail_branch_13>:
     11ec:	3c04dead 	lui	a0,0xdead
-    11f0:	0c00002b 	jal	ac <report_result>
+    11f0:	0c00002d 	jal	b4 <report_result>
     11f4:	3484150d 	ori	a0,a0,0x150d
     11f8:	00000000 	nop
 
 000011fc <fail_branch_14>:
     11fc:	3c04dead 	lui	a0,0xdead
-    1200:	0c00002b 	jal	ac <report_result>
+    1200:	0c00002d 	jal	b4 <report_result>
     1204:	3484150e 	ori	a0,a0,0x150e
     1208:	00000000 	nop
 
 0000120c <fail_branch_15>:
     120c:	3c04dead 	lui	a0,0xdead
-    1210:	0c00002b 	jal	ac <report_result>
+    1210:	0c00002d 	jal	b4 <report_result>
     1214:	3484150f 	ori	a0,a0,0x150f
     1218:	00000000 	nop
 
 0000121c <test_load_store>:
     121c:	3c080000 	lui	t0,0x0
-    1220:	25082140 	addiu	t0,t0,8512
+    1220:	25082230 	addiu	t0,t0,8752
     1224:	8d090000 	lw	t1,0(t0)
     1228:	3c0a1234 	lui	t2,0x1234
     122c:	354a5678 	ori	t2,t2,0x5678
@@ -1323,7 +1325,7 @@ Disassembly of section .text:
     124c:	00000000 	nop
     1250:	ad0a0000 	sw	t2,0(t0)
     1254:	3c080000 	lui	t0,0x0
-    1258:	25082140 	addiu	t0,t0,8512
+    1258:	25082230 	addiu	t0,t0,8752
     125c:	85090002 	lh	t1,2(t0)
     1260:	240a5678 	li	t2,22136
     1264:	152a00b4 	bne	t1,t2,1538 <fail_ls_2>
@@ -1341,7 +1343,7 @@ Disassembly of section .text:
     1294:	152a00a8 	bne	t1,t2,1538 <fail_ls_2>
     1298:	00000000 	nop
     129c:	3c080000 	lui	t0,0x0
-    12a0:	25082140 	addiu	t0,t0,8512
+    12a0:	25082230 	addiu	t0,t0,8752
     12a4:	81090000 	lb	t1,0(t0)
     12a8:	240a0012 	li	t2,18
     12ac:	152a00a6 	bne	t1,t2,1548 <fail_ls_3>
@@ -1355,7 +1357,7 @@ Disassembly of section .text:
     12cc:	152a009e 	bne	t1,t2,1548 <fail_ls_3>
     12d0:	00000000 	nop
     12d4:	3c080000 	lui	t0,0x0
-    12d8:	25082140 	addiu	t0,t0,8512
+    12d8:	25082230 	addiu	t0,t0,8752
     12dc:	2508000c 	addiu	t0,t0,12
     12e0:	2409005a 	li	t1,90
     12e4:	a1090000 	sb	t1,0(t0)
@@ -1369,7 +1371,7 @@ Disassembly of section .text:
     1304:	00000000 	nop
     1308:	ad000000 	sw	zero,0(t0)
     130c:	3c080000 	lui	t0,0x0
-    1310:	25082158 	addiu	t0,t0,8536
+    1310:	25082248 	addiu	t0,t0,8776
     1314:	89090000 	lwl	t1,0(t0)
     1318:	99090003 	lwr	t1,3(t0)
     131c:	3c0aaabb 	lui	t2,0xaabb
@@ -1377,7 +1379,7 @@ Disassembly of section .text:
     1324:	152a0090 	bne	t1,t2,1568 <fail_ls_5>
     1328:	00000000 	nop
     132c:	3c080000 	lui	t0,0x0
-    1330:	25082140 	addiu	t0,t0,8512
+    1330:	25082230 	addiu	t0,t0,8752
     1334:	2508000c 	addiu	t0,t0,12
     1338:	3c09dead 	lui	t1,0xdead
     133c:	3529beef 	ori	t1,t1,0xbeef
@@ -1390,7 +1392,7 @@ Disassembly of section .text:
     1358:	ad000000 	sw	zero,0(t0)
     135c:	ad000004 	sw	zero,4(t0)
     1360:	3c080000 	lui	t0,0x0
-    1364:	25082160 	addiu	t0,t0,8544
+    1364:	25082250 	addiu	t0,t0,8784
     1368:	ad000000 	sw	zero,0(t0)
 
 0000136c <try_sc>:
@@ -1404,10 +1406,10 @@ Disassembly of section .text:
     1388:	156c007f 	bne	t3,t4,1588 <fail_ls_7>
     138c:	00000000 	nop
     1390:	3c080000 	lui	t0,0x0
-    1394:	25082160 	addiu	t0,t0,8544
+    1394:	25082250 	addiu	t0,t0,8784
     1398:	ad000000 	sw	zero,0(t0)
     139c:	3c0d0000 	lui	t5,0x0
-    13a0:	25ad2158 	addiu	t5,t5,8536
+    13a0:	25ad2248 	addiu	t5,t5,8776
     13a4:	c1090000 	ll	t1,0(t0)
     13a8:	e1a00000 	sc	zero,0(t5)
     13ac:	00000000 	nop
@@ -1419,7 +1421,7 @@ Disassembly of section .text:
     13c4:	15600074 	bnez	t3,1598 <fail_ls_8>
     13c8:	00000000 	nop
     13cc:	3c080000 	lui	t0,0x0
-    13d0:	25082140 	addiu	t0,t0,8512
+    13d0:	25082230 	addiu	t0,t0,8752
     13d4:	8d097fff 	lw	t1,32767(t0)
     13d8:	3c0a1234 	lui	t2,0x1234
     13dc:	354a5678 	ori	t2,t2,0x5678
@@ -1431,7 +1433,7 @@ Disassembly of section .text:
     13f4:	156a006c 	bne	t3,t2,15a8 <fail_ls_9>
     13f8:	00000000 	nop
     13fc:	3c080000 	lui	t0,0x0
-    1400:	25082150 	addiu	t0,t0,8528
+    1400:	25082240 	addiu	t0,t0,8768
     1404:	24090080 	li	t1,128
     1408:	a1090000 	sb	t1,0(t0)
     140c:	810a0000 	lb	t2,0(t0)
@@ -1454,7 +1456,7 @@ Disassembly of section .text:
     1450:	24090055 	li	t1,85
     1454:	a1090000 	sb	t1,0(t0)
     1458:	3c080000 	lui	t0,0x0
-    145c:	25082154 	addiu	t0,t0,8532
+    145c:	25082244 	addiu	t0,t0,8772
     1460:	34098000 	li	t1,0x8000
     1464:	a5090000 	sh	t1,0(t0)
     1468:	850a0000 	lh	t2,0(t0)
@@ -1477,7 +1479,7 @@ Disassembly of section .text:
     14ac:	24091122 	li	t1,4386
     14b0:	a5090000 	sh	t1,0(t0)
     14b4:	3c080000 	lui	t0,0x0
-    14b8:	25082158 	addiu	t0,t0,8536
+    14b8:	25082248 	addiu	t0,t0,8776
     14bc:	25080003 	addiu	t0,t0,3
     14c0:	3c09abcd 	lui	t1,0xabcd
     14c4:	35291234 	ori	t1,t1,0x1234
@@ -1488,9 +1490,9 @@ Disassembly of section .text:
     14d8:	1549003f 	bne	t2,t1,15d8 <fail_ls_12>
     14dc:	00000000 	nop
     14e0:	3c080000 	lui	t0,0x0
-    14e4:	25082160 	addiu	t0,t0,8544
+    14e4:	25082250 	addiu	t0,t0,8784
     14e8:	3c0d0000 	lui	t5,0x0
-    14ec:	25ad2158 	addiu	t5,t5,8536
+    14ec:	25ad2248 	addiu	t5,t5,8776
     14f0:	ad000000 	sw	zero,0(t0)
     14f4:	c1090000 	ll	t1,0(t0)
     14f8:	e1a00000 	sc	zero,0(t5)
@@ -1508,79 +1510,79 @@ Disassembly of section .text:
 
 00001528 <fail_ls_1>:
     1528:	3c04dead 	lui	a0,0xdead
-    152c:	0c00002b 	jal	ac <report_result>
+    152c:	0c00002d 	jal	b4 <report_result>
     1530:	34841601 	ori	a0,a0,0x1601
     1534:	00000000 	nop
 
 00001538 <fail_ls_2>:
     1538:	3c04dead 	lui	a0,0xdead
-    153c:	0c00002b 	jal	ac <report_result>
+    153c:	0c00002d 	jal	b4 <report_result>
     1540:	34841602 	ori	a0,a0,0x1602
     1544:	00000000 	nop
 
 00001548 <fail_ls_3>:
     1548:	3c04dead 	lui	a0,0xdead
-    154c:	0c00002b 	jal	ac <report_result>
+    154c:	0c00002d 	jal	b4 <report_result>
     1550:	34841603 	ori	a0,a0,0x1603
     1554:	00000000 	nop
 
 00001558 <fail_ls_4>:
     1558:	3c04dead 	lui	a0,0xdead
-    155c:	0c00002b 	jal	ac <report_result>
+    155c:	0c00002d 	jal	b4 <report_result>
     1560:	34841604 	ori	a0,a0,0x1604
     1564:	00000000 	nop
 
 00001568 <fail_ls_5>:
     1568:	3c04dead 	lui	a0,0xdead
-    156c:	0c00002b 	jal	ac <report_result>
+    156c:	0c00002d 	jal	b4 <report_result>
     1570:	34841605 	ori	a0,a0,0x1605
     1574:	00000000 	nop
 
 00001578 <fail_ls_6>:
     1578:	3c04dead 	lui	a0,0xdead
-    157c:	0c00002b 	jal	ac <report_result>
+    157c:	0c00002d 	jal	b4 <report_result>
     1580:	34841606 	ori	a0,a0,0x1606
     1584:	00000000 	nop
 
 00001588 <fail_ls_7>:
     1588:	3c04dead 	lui	a0,0xdead
-    158c:	0c00002b 	jal	ac <report_result>
+    158c:	0c00002d 	jal	b4 <report_result>
     1590:	34841607 	ori	a0,a0,0x1607
     1594:	00000000 	nop
 
 00001598 <fail_ls_8>:
     1598:	3c04dead 	lui	a0,0xdead
-    159c:	0c00002b 	jal	ac <report_result>
+    159c:	0c00002d 	jal	b4 <report_result>
     15a0:	34841608 	ori	a0,a0,0x1608
     15a4:	00000000 	nop
 
 000015a8 <fail_ls_9>:
     15a8:	3c04dead 	lui	a0,0xdead
-    15ac:	0c00002b 	jal	ac <report_result>
+    15ac:	0c00002d 	jal	b4 <report_result>
     15b0:	34841609 	ori	a0,a0,0x1609
     15b4:	00000000 	nop
 
 000015b8 <fail_ls_10>:
     15b8:	3c04dead 	lui	a0,0xdead
-    15bc:	0c00002b 	jal	ac <report_result>
+    15bc:	0c00002d 	jal	b4 <report_result>
     15c0:	3484160a 	ori	a0,a0,0x160a
     15c4:	00000000 	nop
 
 000015c8 <fail_ls_11>:
     15c8:	3c04dead 	lui	a0,0xdead
-    15cc:	0c00002b 	jal	ac <report_result>
+    15cc:	0c00002d 	jal	b4 <report_result>
     15d0:	3484160b 	ori	a0,a0,0x160b
     15d4:	00000000 	nop
 
 000015d8 <fail_ls_12>:
     15d8:	3c04dead 	lui	a0,0xdead
-    15dc:	0c00002b 	jal	ac <report_result>
+    15dc:	0c00002d 	jal	b4 <report_result>
     15e0:	3484160c 	ori	a0,a0,0x160c
     15e4:	00000000 	nop
 
 000015e8 <fail_ls_13>:
     15e8:	3c04dead 	lui	a0,0xdead
-    15ec:	0c00002b 	jal	ac <report_result>
+    15ec:	0c00002d 	jal	b4 <report_result>
     15f0:	3484160d 	ori	a0,a0,0x160d
     15f4:	00000000 	nop
 
@@ -1639,49 +1641,49 @@ Disassembly of section .text:
 
 000016c4 <fail_cp0_1>:
     16c4:	3c04dead 	lui	a0,0xdead
-    16c8:	0c00002b 	jal	ac <report_result>
+    16c8:	0c00002d 	jal	b4 <report_result>
     16cc:	34841801 	ori	a0,a0,0x1801
     16d0:	00000000 	nop
 
 000016d4 <fail_cp0_2>:
     16d4:	3c04dead 	lui	a0,0xdead
-    16d8:	0c00002b 	jal	ac <report_result>
+    16d8:	0c00002d 	jal	b4 <report_result>
     16dc:	34841802 	ori	a0,a0,0x1802
     16e0:	00000000 	nop
 
 000016e4 <fail_cp0_3>:
     16e4:	3c04dead 	lui	a0,0xdead
-    16e8:	0c00002b 	jal	ac <report_result>
+    16e8:	0c00002d 	jal	b4 <report_result>
     16ec:	34841803 	ori	a0,a0,0x1803
     16f0:	00000000 	nop
 
 000016f4 <fail_cp0_4>:
     16f4:	3c04dead 	lui	a0,0xdead
-    16f8:	0c00002b 	jal	ac <report_result>
+    16f8:	0c00002d 	jal	b4 <report_result>
     16fc:	34841804 	ori	a0,a0,0x1804
     1700:	00000000 	nop
 
 00001704 <fail_cp0_5>:
     1704:	3c04dead 	lui	a0,0xdead
-    1708:	0c00002b 	jal	ac <report_result>
+    1708:	0c00002d 	jal	b4 <report_result>
     170c:	34841805 	ori	a0,a0,0x1805
     1710:	00000000 	nop
 
 00001714 <fail_cp0_6>:
     1714:	3c04dead 	lui	a0,0xdead
-    1718:	0c00002b 	jal	ac <report_result>
+    1718:	0c00002d 	jal	b4 <report_result>
     171c:	34841806 	ori	a0,a0,0x1806
     1720:	00000000 	nop
 
 00001724 <fail_cp0_7>:
     1724:	3c04dead 	lui	a0,0xdead
-    1728:	0c00002b 	jal	ac <report_result>
+    1728:	0c00002d 	jal	b4 <report_result>
     172c:	34841807 	ori	a0,a0,0x1807
     1730:	00000000 	nop
 
 00001734 <fail_cp0_8>:
     1734:	3c04dead 	lui	a0,0xdead
-    1738:	0c00002b 	jal	ac <report_result>
+    1738:	0c00002d 	jal	b4 <report_result>
     173c:	34841808 	ori	a0,a0,0x1808
     1740:	00000000 	nop
 
@@ -1690,170 +1692,170 @@ Disassembly of section .text:
     1748:	40886000 	mtc0	t0,c0_status
     174c:	40806800 	mtc0	zero,c0_cause
     1750:	3c080000 	lui	t0,0x0
-    1754:	25082164 	addiu	t0,t0,8548
+    1754:	25082254 	addiu	t0,t0,8788
     1758:	ad000000 	sw	zero,0(t0)
     175c:	24020001 	li	v0,1
     1760:	0000000c 	syscall
     1764:	00000000 	nop
     1768:	3c080000 	lui	t0,0x0
-    176c:	25082164 	addiu	t0,t0,8548
+    176c:	25082254 	addiu	t0,t0,8788
     1770:	8d090000 	lw	t1,0(t0)
     1774:	240a0001 	li	t2,1
     1778:	152a00b7 	bne	t1,t2,1a58 <fail_exception_1>
     177c:	00000000 	nop
     1780:	3c080000 	lui	t0,0x0
-    1784:	25082168 	addiu	t0,t0,8552
+    1784:	25082258 	addiu	t0,t0,8792
     1788:	ad000000 	sw	zero,0(t0)
     178c:	24090005 	li	t1,5
     1790:	240a0005 	li	t2,5
     1794:	012a0034 	teq	t1,t2
     1798:	00000000 	nop
     179c:	3c080000 	lui	t0,0x0
-    17a0:	25082168 	addiu	t0,t0,8552
+    17a0:	25082258 	addiu	t0,t0,8792
     17a4:	8d090000 	lw	t1,0(t0)
     17a8:	240a0001 	li	t2,1
     17ac:	152a00ae 	bne	t1,t2,1a68 <fail_exception_2>
     17b0:	00000000 	nop
     17b4:	3c080000 	lui	t0,0x0
-    17b8:	25082168 	addiu	t0,t0,8552
+    17b8:	25082258 	addiu	t0,t0,8792
     17bc:	ad000000 	sw	zero,0(t0)
     17c0:	24090001 	li	t1,1
     17c4:	240a0002 	li	t2,2
     17c8:	012a0036 	tne	t1,t2
     17cc:	00000000 	nop
     17d0:	3c080000 	lui	t0,0x0
-    17d4:	25082168 	addiu	t0,t0,8552
+    17d4:	25082258 	addiu	t0,t0,8792
     17d8:	8d090000 	lw	t1,0(t0)
     17dc:	240a0001 	li	t2,1
     17e0:	152a00a5 	bne	t1,t2,1a78 <fail_exception_3>
     17e4:	00000000 	nop
     17e8:	3c080000 	lui	t0,0x0
-    17ec:	25082168 	addiu	t0,t0,8552
+    17ec:	25082258 	addiu	t0,t0,8792
     17f0:	ad000000 	sw	zero,0(t0)
     17f4:	24090005 	li	t1,5
     17f8:	240a0003 	li	t2,3
     17fc:	012a0030 	tge	t1,t2
     1800:	00000000 	nop
     1804:	3c080000 	lui	t0,0x0
-    1808:	25082168 	addiu	t0,t0,8552
+    1808:	25082258 	addiu	t0,t0,8792
     180c:	8d090000 	lw	t1,0(t0)
     1810:	240a0001 	li	t2,1
     1814:	152a009c 	bne	t1,t2,1a88 <fail_exception_4>
     1818:	00000000 	nop
     181c:	3c080000 	lui	t0,0x0
-    1820:	25082168 	addiu	t0,t0,8552
+    1820:	25082258 	addiu	t0,t0,8792
     1824:	ad000000 	sw	zero,0(t0)
     1828:	2409ffff 	li	t1,-1
     182c:	240a0001 	li	t2,1
     1830:	012a0031 	tgeu	t1,t2
     1834:	00000000 	nop
     1838:	3c080000 	lui	t0,0x0
-    183c:	25082168 	addiu	t0,t0,8552
+    183c:	25082258 	addiu	t0,t0,8792
     1840:	8d090000 	lw	t1,0(t0)
     1844:	240a0001 	li	t2,1
     1848:	152a0093 	bne	t1,t2,1a98 <fail_exception_5>
     184c:	00000000 	nop
     1850:	3c080000 	lui	t0,0x0
-    1854:	25082168 	addiu	t0,t0,8552
+    1854:	25082258 	addiu	t0,t0,8792
     1858:	ad000000 	sw	zero,0(t0)
     185c:	24090002 	li	t1,2
     1860:	240a0005 	li	t2,5
     1864:	012a0032 	tlt	t1,t2
     1868:	00000000 	nop
     186c:	3c080000 	lui	t0,0x0
-    1870:	25082168 	addiu	t0,t0,8552
+    1870:	25082258 	addiu	t0,t0,8792
     1874:	8d090000 	lw	t1,0(t0)
     1878:	240a0001 	li	t2,1
     187c:	152a008a 	bne	t1,t2,1aa8 <fail_exception_6>
     1880:	00000000 	nop
     1884:	3c080000 	lui	t0,0x0
-    1888:	25082168 	addiu	t0,t0,8552
+    1888:	25082258 	addiu	t0,t0,8792
     188c:	ad000000 	sw	zero,0(t0)
     1890:	24090001 	li	t1,1
     1894:	3c0a8000 	lui	t2,0x8000
     1898:	012a0033 	tltu	t1,t2
     189c:	00000000 	nop
     18a0:	3c080000 	lui	t0,0x0
-    18a4:	25082168 	addiu	t0,t0,8552
+    18a4:	25082258 	addiu	t0,t0,8792
     18a8:	8d090000 	lw	t1,0(t0)
     18ac:	240a0001 	li	t2,1
     18b0:	152a0081 	bne	t1,t2,1ab8 <fail_exception_7>
     18b4:	00000000 	nop
     18b8:	3c080000 	lui	t0,0x0
-    18bc:	25082168 	addiu	t0,t0,8552
+    18bc:	25082258 	addiu	t0,t0,8792
     18c0:	ad000000 	sw	zero,0(t0)
     18c4:	24091234 	li	t1,4660
     18c8:	052c1234 	teqi	t1,4660
     18cc:	00000000 	nop
     18d0:	3c080000 	lui	t0,0x0
-    18d4:	25082168 	addiu	t0,t0,8552
+    18d4:	25082258 	addiu	t0,t0,8792
     18d8:	8d090000 	lw	t1,0(t0)
     18dc:	240a0001 	li	t2,1
     18e0:	152a0079 	bne	t1,t2,1ac8 <fail_exception_8>
     18e4:	00000000 	nop
     18e8:	3c080000 	lui	t0,0x0
-    18ec:	25082168 	addiu	t0,t0,8552
+    18ec:	25082258 	addiu	t0,t0,8792
     18f0:	ad000000 	sw	zero,0(t0)
     18f4:	24091234 	li	t1,4660
     18f8:	052e5678 	tnei	t1,22136
     18fc:	00000000 	nop
     1900:	3c080000 	lui	t0,0x0
-    1904:	25082168 	addiu	t0,t0,8552
+    1904:	25082258 	addiu	t0,t0,8792
     1908:	8d090000 	lw	t1,0(t0)
     190c:	240a0001 	li	t2,1
     1910:	152a0071 	bne	t1,t2,1ad8 <fail_exception_9>
     1914:	00000000 	nop
     1918:	3c080000 	lui	t0,0x0
-    191c:	25082168 	addiu	t0,t0,8552
+    191c:	25082258 	addiu	t0,t0,8792
     1920:	ad000000 	sw	zero,0(t0)
     1924:	2409000a 	li	t1,10
     1928:	05280005 	tgei	t1,5
     192c:	00000000 	nop
     1930:	3c080000 	lui	t0,0x0
-    1934:	25082168 	addiu	t0,t0,8552
+    1934:	25082258 	addiu	t0,t0,8792
     1938:	8d090000 	lw	t1,0(t0)
     193c:	240a0001 	li	t2,1
     1940:	152a0069 	bne	t1,t2,1ae8 <fail_exception_10>
     1944:	00000000 	nop
     1948:	3c080000 	lui	t0,0x0
-    194c:	25082168 	addiu	t0,t0,8552
+    194c:	25082258 	addiu	t0,t0,8792
     1950:	ad000000 	sw	zero,0(t0)
     1954:	2409ffff 	li	t1,-1
     1958:	05298000 	tgeiu	t1,-32768
     195c:	00000000 	nop
     1960:	3c080000 	lui	t0,0x0
-    1964:	25082168 	addiu	t0,t0,8552
+    1964:	25082258 	addiu	t0,t0,8792
     1968:	8d090000 	lw	t1,0(t0)
     196c:	240a0001 	li	t2,1
     1970:	152a0061 	bne	t1,t2,1af8 <fail_exception_11>
     1974:	00000000 	nop
     1978:	3c080000 	lui	t0,0x0
-    197c:	25082168 	addiu	t0,t0,8552
+    197c:	25082258 	addiu	t0,t0,8792
     1980:	ad000000 	sw	zero,0(t0)
     1984:	24090003 	li	t1,3
     1988:	052a000a 	tlti	t1,10
     198c:	00000000 	nop
     1990:	3c080000 	lui	t0,0x0
-    1994:	25082168 	addiu	t0,t0,8552
+    1994:	25082258 	addiu	t0,t0,8792
     1998:	8d090000 	lw	t1,0(t0)
     199c:	240a0001 	li	t2,1
     19a0:	152a0059 	bne	t1,t2,1b08 <fail_exception_12>
     19a4:	00000000 	nop
     19a8:	3c080000 	lui	t0,0x0
-    19ac:	25082168 	addiu	t0,t0,8552
+    19ac:	25082258 	addiu	t0,t0,8792
     19b0:	ad000000 	sw	zero,0(t0)
     19b4:	24090100 	li	t1,256
     19b8:	3c0a8000 	lui	t2,0x8000
     19bc:	012a0033 	tltu	t1,t2
     19c0:	00000000 	nop
     19c4:	3c080000 	lui	t0,0x0
-    19c8:	25082168 	addiu	t0,t0,8552
+    19c8:	25082258 	addiu	t0,t0,8792
     19cc:	8d090000 	lw	t1,0(t0)
     19d0:	240a0001 	li	t2,1
     19d4:	152a0050 	bne	t1,t2,1b18 <fail_exception_13>
     19d8:	00000000 	nop
     19dc:	3c080000 	lui	t0,0x0
-    19e0:	2508216c 	addiu	t0,t0,8556
+    19e0:	2508225c 	addiu	t0,t0,8796
     19e4:	ad000000 	sw	zero,0(t0)
     19e8:	3c097fff 	lui	t1,0x7fff
     19ec:	3529ffff 	ori	t1,t1,0xffff
@@ -1862,20 +1864,20 @@ Disassembly of section .text:
     19f8:	012a5820 	add	t3,t1,t2
     19fc:	00000000 	nop
     1a00:	3c080000 	lui	t0,0x0
-    1a04:	2508216c 	addiu	t0,t0,8556
+    1a04:	2508225c 	addiu	t0,t0,8796
     1a08:	8d090000 	lw	t1,0(t0)
     1a0c:	240a0001 	li	t2,1
     1a10:	152a0045 	bne	t1,t2,1b28 <fail_exception_14>
     1a14:	00000000 	nop
     1a18:	3c080000 	lui	t0,0x0
-    1a1c:	2508216c 	addiu	t0,t0,8556
+    1a1c:	2508225c 	addiu	t0,t0,8796
     1a20:	ad000000 	sw	zero,0(t0)
     1a24:	3c097fff 	lui	t1,0x7fff
     1a28:	3529ffff 	ori	t1,t1,0xffff
     1a2c:	212a0001 	addi	t2,t1,1
     1a30:	00000000 	nop
     1a34:	3c080000 	lui	t0,0x0
-    1a38:	2508216c 	addiu	t0,t0,8556
+    1a38:	2508225c 	addiu	t0,t0,8796
     1a3c:	8d090000 	lw	t1,0(t0)
     1a40:	240a0001 	li	t2,1
     1a44:	152a003c 	bne	t1,t2,1b38 <fail_exception_15>
@@ -1886,91 +1888,91 @@ Disassembly of section .text:
 
 00001a58 <fail_exception_1>:
     1a58:	3c04dead 	lui	a0,0xdead
-    1a5c:	0c00002b 	jal	ac <report_result>
+    1a5c:	0c00002d 	jal	b4 <report_result>
     1a60:	34841809 	ori	a0,a0,0x1809
     1a64:	00000000 	nop
 
 00001a68 <fail_exception_2>:
     1a68:	3c04dead 	lui	a0,0xdead
-    1a6c:	0c00002b 	jal	ac <report_result>
+    1a6c:	0c00002d 	jal	b4 <report_result>
     1a70:	3484180a 	ori	a0,a0,0x180a
     1a74:	00000000 	nop
 
 00001a78 <fail_exception_3>:
     1a78:	3c04dead 	lui	a0,0xdead
-    1a7c:	0c00002b 	jal	ac <report_result>
+    1a7c:	0c00002d 	jal	b4 <report_result>
     1a80:	3484180b 	ori	a0,a0,0x180b
     1a84:	00000000 	nop
 
 00001a88 <fail_exception_4>:
     1a88:	3c04dead 	lui	a0,0xdead
-    1a8c:	0c00002b 	jal	ac <report_result>
+    1a8c:	0c00002d 	jal	b4 <report_result>
     1a90:	3484180c 	ori	a0,a0,0x180c
     1a94:	00000000 	nop
 
 00001a98 <fail_exception_5>:
     1a98:	3c04dead 	lui	a0,0xdead
-    1a9c:	0c00002b 	jal	ac <report_result>
+    1a9c:	0c00002d 	jal	b4 <report_result>
     1aa0:	3484180d 	ori	a0,a0,0x180d
     1aa4:	00000000 	nop
 
 00001aa8 <fail_exception_6>:
     1aa8:	3c04dead 	lui	a0,0xdead
-    1aac:	0c00002b 	jal	ac <report_result>
+    1aac:	0c00002d 	jal	b4 <report_result>
     1ab0:	3484180e 	ori	a0,a0,0x180e
     1ab4:	00000000 	nop
 
 00001ab8 <fail_exception_7>:
     1ab8:	3c04dead 	lui	a0,0xdead
-    1abc:	0c00002b 	jal	ac <report_result>
+    1abc:	0c00002d 	jal	b4 <report_result>
     1ac0:	3484180f 	ori	a0,a0,0x180f
     1ac4:	00000000 	nop
 
 00001ac8 <fail_exception_8>:
     1ac8:	3c04dead 	lui	a0,0xdead
-    1acc:	0c00002b 	jal	ac <report_result>
+    1acc:	0c00002d 	jal	b4 <report_result>
     1ad0:	34841810 	ori	a0,a0,0x1810
     1ad4:	00000000 	nop
 
 00001ad8 <fail_exception_9>:
     1ad8:	3c04dead 	lui	a0,0xdead
-    1adc:	0c00002b 	jal	ac <report_result>
+    1adc:	0c00002d 	jal	b4 <report_result>
     1ae0:	34841811 	ori	a0,a0,0x1811
     1ae4:	00000000 	nop
 
 00001ae8 <fail_exception_10>:
     1ae8:	3c04dead 	lui	a0,0xdead
-    1aec:	0c00002b 	jal	ac <report_result>
+    1aec:	0c00002d 	jal	b4 <report_result>
     1af0:	34841812 	ori	a0,a0,0x1812
     1af4:	00000000 	nop
 
 00001af8 <fail_exception_11>:
     1af8:	3c04dead 	lui	a0,0xdead
-    1afc:	0c00002b 	jal	ac <report_result>
+    1afc:	0c00002d 	jal	b4 <report_result>
     1b00:	34841813 	ori	a0,a0,0x1813
     1b04:	00000000 	nop
 
 00001b08 <fail_exception_12>:
     1b08:	3c04dead 	lui	a0,0xdead
-    1b0c:	0c00002b 	jal	ac <report_result>
+    1b0c:	0c00002d 	jal	b4 <report_result>
     1b10:	34841814 	ori	a0,a0,0x1814
     1b14:	00000000 	nop
 
 00001b18 <fail_exception_13>:
     1b18:	3c04dead 	lui	a0,0xdead
-    1b1c:	0c00002b 	jal	ac <report_result>
+    1b1c:	0c00002d 	jal	b4 <report_result>
     1b20:	34841815 	ori	a0,a0,0x1815
     1b24:	00000000 	nop
 
 00001b28 <fail_exception_14>:
     1b28:	3c04dead 	lui	a0,0xdead
-    1b2c:	0c00002b 	jal	ac <report_result>
+    1b2c:	0c00002d 	jal	b4 <report_result>
     1b30:	34841816 	ori	a0,a0,0x1816
     1b34:	00000000 	nop
 
 00001b38 <fail_exception_15>:
     1b38:	3c04dead 	lui	a0,0xdead
-    1b3c:	0c00002b 	jal	ac <report_result>
+    1b3c:	0c00002d 	jal	b4 <report_result>
     1b40:	34841817 	ori	a0,a0,0x1817
     1b44:	00000000 	nop
 
@@ -2031,7 +2033,7 @@ Disassembly of section .text:
     1c20:	3c095555 	lui	t1,0x5555
     1c24:	3529aaaa 	ori	t1,t1,0xaaaa
     1c28:	3c0c0000 	lui	t4,0x0
-    1c2c:	258c2140 	addiu	t4,t4,8512
+    1c2c:	258c2230 	addiu	t4,t4,8752
     1c30:	cd800000 	pref	0x0,0(t4)
     1c34:	00000000 	nop
     1c38:	15090003 	bne	t0,t1,1c48 <test_nop_sync+0x100>
@@ -2052,25 +2054,25 @@ Disassembly of section .text:
 
 00001c74 <fail_nop_1>:
     1c74:	3c04dead 	lui	a0,0xdead
-    1c78:	0c00002b 	jal	ac <report_result>
+    1c78:	0c00002d 	jal	b4 <report_result>
     1c7c:	34841412 	ori	a0,a0,0x1412
     1c80:	00000000 	nop
 
 00001c84 <fail_nop_2>:
     1c84:	3c04dead 	lui	a0,0xdead
-    1c88:	0c00002b 	jal	ac <report_result>
+    1c88:	0c00002d 	jal	b4 <report_result>
     1c8c:	34841413 	ori	a0,a0,0x1413
     1c90:	00000000 	nop
 
 00001c94 <fail_nop_3>:
     1c94:	3c04dead 	lui	a0,0xdead
-    1c98:	0c00002b 	jal	ac <report_result>
+    1c98:	0c00002d 	jal	b4 <report_result>
     1c9c:	34841414 	ori	a0,a0,0x1414
     1ca0:	00000000 	nop
 
 00001ca4 <fail_nop_4>:
     1ca4:	3c04dead 	lui	a0,0xdead
-    1ca8:	0c00002b 	jal	ac <report_result>
+    1ca8:	0c00002d 	jal	b4 <report_result>
     1cac:	34841415 	ori	a0,a0,0x1415
     1cb0:	00000000 	nop
 
@@ -2123,7 +2125,7 @@ Disassembly of section .text:
     1d58:	154b0047 	bne	t2,t3,1e78 <fail_pipeline_4>
     1d5c:	00000000 	nop
     1d60:	3c080000 	lui	t0,0x0
-    1d64:	25082140 	addiu	t0,t0,8512
+    1d64:	25082230 	addiu	t0,t0,8752
     1d68:	8d090000 	lw	t1,0(t0)
     1d6c:	252a0001 	addiu	t2,t1,1
     1d70:	3c0b1234 	lui	t3,0x1234
@@ -2148,7 +2150,7 @@ Disassembly of section .text:
     1dbc:	1569003a 	bne	t3,t1,1ea8 <fail_pipeline_7>
     1dc0:	00000000 	nop
     1dc4:	3c080000 	lui	t0,0x0
-    1dc8:	25082140 	addiu	t0,t0,8512
+    1dc8:	25082230 	addiu	t0,t0,8752
     1dcc:	8d090000 	lw	t1,0(t0)
     1dd0:	252a0001 	addiu	t2,t1,1
     1dd4:	3c0b1234 	lui	t3,0x1234
@@ -2183,260 +2185,336 @@ Disassembly of section .text:
 
 00001e48 <fail_pipeline_1>:
     1e48:	3c04dead 	lui	a0,0xdead
-    1e4c:	0c00002b 	jal	ac <report_result>
+    1e4c:	0c00002d 	jal	b4 <report_result>
     1e50:	34841901 	ori	a0,a0,0x1901
     1e54:	00000000 	nop
 
 00001e58 <fail_pipeline_2>:
     1e58:	3c04dead 	lui	a0,0xdead
-    1e5c:	0c00002b 	jal	ac <report_result>
+    1e5c:	0c00002d 	jal	b4 <report_result>
     1e60:	34841902 	ori	a0,a0,0x1902
     1e64:	00000000 	nop
 
 00001e68 <fail_pipeline_3>:
     1e68:	3c04dead 	lui	a0,0xdead
-    1e6c:	0c00002b 	jal	ac <report_result>
+    1e6c:	0c00002d 	jal	b4 <report_result>
     1e70:	34841903 	ori	a0,a0,0x1903
     1e74:	00000000 	nop
 
 00001e78 <fail_pipeline_4>:
     1e78:	3c04dead 	lui	a0,0xdead
-    1e7c:	0c00002b 	jal	ac <report_result>
+    1e7c:	0c00002d 	jal	b4 <report_result>
     1e80:	34841904 	ori	a0,a0,0x1904
     1e84:	00000000 	nop
 
 00001e88 <fail_pipeline_5>:
     1e88:	3c04dead 	lui	a0,0xdead
-    1e8c:	0c00002b 	jal	ac <report_result>
+    1e8c:	0c00002d 	jal	b4 <report_result>
     1e90:	34841905 	ori	a0,a0,0x1905
     1e94:	00000000 	nop
 
 00001e98 <fail_pipeline_6>:
     1e98:	3c04dead 	lui	a0,0xdead
-    1e9c:	0c00002b 	jal	ac <report_result>
+    1e9c:	0c00002d 	jal	b4 <report_result>
     1ea0:	34841906 	ori	a0,a0,0x1906
     1ea4:	00000000 	nop
 
 00001ea8 <fail_pipeline_7>:
     1ea8:	3c04dead 	lui	a0,0xdead
-    1eac:	0c00002b 	jal	ac <report_result>
+    1eac:	0c00002d 	jal	b4 <report_result>
     1eb0:	34841907 	ori	a0,a0,0x1907
     1eb4:	00000000 	nop
 
 00001eb8 <fail_pipeline_8>:
     1eb8:	3c04dead 	lui	a0,0xdead
-    1ebc:	0c00002b 	jal	ac <report_result>
+    1ebc:	0c00002d 	jal	b4 <report_result>
     1ec0:	34841908 	ori	a0,a0,0x1908
     1ec4:	00000000 	nop
 
 00001ec8 <fail_pipeline_9>:
     1ec8:	3c04dead 	lui	a0,0xdead
-    1ecc:	0c00002b 	jal	ac <report_result>
+    1ecc:	0c00002d 	jal	b4 <report_result>
     1ed0:	34841909 	ori	a0,a0,0x1909
     1ed4:	00000000 	nop
 
 00001ed8 <fail_pipeline_10>:
     1ed8:	3c04dead 	lui	a0,0xdead
-    1edc:	0c00002b 	jal	ac <report_result>
+    1edc:	0c00002d 	jal	b4 <report_result>
     1ee0:	3484190a 	ori	a0,a0,0x190a
     1ee4:	00000000 	nop
 
-00001ee8 <_exception_entry>:
-    1ee8:	27bdff80 	addiu	sp,sp,-128
-    1eec:	afa10000 	sw	at,0(sp)
-    1ef0:	afa20004 	sw	v0,4(sp)
-    1ef4:	afa30008 	sw	v1,8(sp)
-    1ef8:	afa4000c 	sw	a0,12(sp)
-    1efc:	afa50010 	sw	a1,16(sp)
-    1f00:	afa60014 	sw	a2,20(sp)
-    1f04:	afa70018 	sw	a3,24(sp)
-    1f08:	afa8001c 	sw	t0,28(sp)
-    1f0c:	afa90020 	sw	t1,32(sp)
-    1f10:	afaa0024 	sw	t2,36(sp)
-    1f14:	afab0028 	sw	t3,40(sp)
-    1f18:	afac002c 	sw	t4,44(sp)
-    1f1c:	afad0030 	sw	t5,48(sp)
-    1f20:	afae0034 	sw	t6,52(sp)
-    1f24:	afaf0038 	sw	t7,56(sp)
-    1f28:	afb0003c 	sw	s0,60(sp)
-    1f2c:	afb10040 	sw	s1,64(sp)
-    1f30:	afb20044 	sw	s2,68(sp)
-    1f34:	afb30048 	sw	s3,72(sp)
-    1f38:	afb4004c 	sw	s4,76(sp)
-    1f3c:	afb50050 	sw	s5,80(sp)
-    1f40:	afb60054 	sw	s6,84(sp)
-    1f44:	afb70058 	sw	s7,88(sp)
-    1f48:	afb8005c 	sw	t8,92(sp)
-    1f4c:	afb90060 	sw	t9,96(sp)
-    1f50:	afbc0064 	sw	gp,100(sp)
-    1f54:	afbe0068 	sw	s8,104(sp)
-    1f58:	afbf006c 	sw	ra,108(sp)
-    1f5c:	401a6800 	mfc0	k0,c0_cause
-    1f60:	001ad882 	srl	k1,k0,0x2
-    1f64:	337b001f 	andi	k1,k1,0x1f
+00001ee8 <test_timer_interrupt>:
+    1ee8:	24080401 	li	t0,1025
+    1eec:	40886000 	mtc0	t0,c0_status
+    1ef0:	40806800 	mtc0	zero,c0_cause
+    1ef4:	40084800 	mfc0	t0,c0_count
+    1ef8:	250800c8 	addiu	t0,t0,200
+    1efc:	40885800 	mtc0	t0,c0_compare
+    1f00:	3c080000 	lui	t0,0x0
+    1f04:	25082260 	addiu	t0,t0,8800
+    1f08:	ad000000 	sw	zero,0(t0)
+
+00001f0c <wait_timer>:
+    1f0c:	8d090000 	lw	t1,0(t0)
+    1f10:	1120fffe 	beqz	t1,1f0c <wait_timer>
+    1f14:	00000000 	nop
+    1f18:	240a0001 	li	t2,1
+    1f1c:	152a0017 	bne	t1,t2,1f7c <fail_timer_int>
+    1f20:	00000000 	nop
+    1f24:	3c080000 	lui	t0,0x0
+    1f28:	25082260 	addiu	t0,t0,8800
+    1f2c:	ad000000 	sw	zero,0(t0)
+    1f30:	40084800 	mfc0	t0,c0_count
+    1f34:	250800c8 	addiu	t0,t0,200
+    1f38:	40885800 	mtc0	t0,c0_compare
+    1f3c:	24080401 	li	t0,1025
+    1f40:	40886000 	mtc0	t0,c0_status
+
+00001f44 <wait_timer2>:
+    1f44:	3c080000 	lui	t0,0x0
+    1f48:	25082260 	addiu	t0,t0,8800
+    1f4c:	8d090000 	lw	t1,0(t0)
+    1f50:	1120fffc 	beqz	t1,1f44 <wait_timer2>
+    1f54:	00000000 	nop
+    1f58:	8d090000 	lw	t1,0(t0)
+    1f5c:	240a0001 	li	t2,1
+    1f60:	152a000a 	bne	t1,t2,1f8c <fail_timer_int2>
+    1f64:	00000000 	nop
     1f68:	24080000 	li	t0,0
-    1f6c:	13680015 	beq	k1,t0,1fc4 <_int_handler>
-    1f70:	00000000 	nop
+    1f6c:	40886000 	mtc0	t0,c0_status
+    1f70:	03e00008 	jr	ra
     1f74:	00000000 	nop
-    1f78:	24080008 	li	t0,8
-    1f7c:	13680014 	beq	k1,t0,1fd0 <_syscall_handler>
-    1f80:	00000000 	nop
-    1f84:	00000000 	nop
-    1f88:	2408000d 	li	t0,13
-    1f8c:	1368001d 	beq	k1,t0,2004 <_trap_handler>
-    1f90:	00000000 	nop
-    1f94:	00000000 	nop
-    1f98:	2408000c 	li	t0,12
-    1f9c:	13680021 	beq	k1,t0,2024 <_ov_handler>
-    1fa0:	00000000 	nop
-    1fa4:	00000000 	nop
-    1fa8:	2408000a 	li	t0,10
-    1fac:	13680025 	beq	k1,t0,2044 <_invalid_instr_handler>
-    1fb0:	00000000 	nop
-    1fb4:	00000000 	nop
+    1f78:	00000000 	nop
 
-00001fb8 <_unknown_exception>:
-    1fb8:	080007ee 	j	1fb8 <_unknown_exception>
-    1fbc:	00000000 	nop
-    1fc0:	00000000 	nop
+00001f7c <fail_timer_int>:
+    1f7c:	3c04dead 	lui	a0,0xdead
+    1f80:	0c00002d 	jal	b4 <report_result>
+    1f84:	34841a01 	ori	a0,a0,0x1a01
+    1f88:	00000000 	nop
 
-00001fc4 <_int_handler>:
-    1fc4:	08000823 	j	208c <_exception_return>
-    1fc8:	00000000 	nop
-    1fcc:	00000000 	nop
+00001f8c <fail_timer_int2>:
+    1f8c:	3c04dead 	lui	a0,0xdead
+    1f90:	0c00002d 	jal	b4 <report_result>
+    1f94:	34841a02 	ori	a0,a0,0x1a02
+    1f98:	00000000 	nop
 
-00001fd0 <_syscall_handler>:
-    1fd0:	24080001 	li	t0,1
-    1fd4:	14480006 	bne	v0,t0,1ff0 <_syscall_handler+0x20>
-    1fd8:	00000000 	nop
-    1fdc:	00000000 	nop
-    1fe0:	3c090000 	lui	t1,0x0
-    1fe4:	25292164 	addiu	t1,t1,8548
-    1fe8:	240a0001 	li	t2,1
-    1fec:	ad2a0000 	sw	t2,0(t1)
-    1ff0:	0c000816 	jal	2058 <_advance_epc>
-    1ff4:	00000000 	nop
-    1ff8:	08000823 	j	208c <_exception_return>
-    1ffc:	00000000 	nop
-    2000:	00000000 	nop
-
-00002004 <_trap_handler>:
-    2004:	3c090000 	lui	t1,0x0
-    2008:	25292168 	addiu	t1,t1,8552
-    200c:	240a0001 	li	t2,1
-    2010:	0c000816 	jal	2058 <_advance_epc>
-    2014:	ad2a0000 	sw	t2,0(t1)
-    2018:	08000823 	j	208c <_exception_return>
-    201c:	00000000 	nop
-    2020:	00000000 	nop
-
-00002024 <_ov_handler>:
-    2024:	3c090000 	lui	t1,0x0
-    2028:	2529216c 	addiu	t1,t1,8556
-    202c:	240a0001 	li	t2,1
-    2030:	0c000816 	jal	2058 <_advance_epc>
-    2034:	ad2a0000 	sw	t2,0(t1)
-    2038:	08000823 	j	208c <_exception_return>
-    203c:	00000000 	nop
-    2040:	00000000 	nop
-
-00002044 <_invalid_instr_handler>:
-    2044:	0c000816 	jal	2058 <_advance_epc>
+00001f9c <_exception_entry>:
+    1f9c:	27bdff80 	addiu	sp,sp,-128
+    1fa0:	afa10000 	sw	at,0(sp)
+    1fa4:	afa20004 	sw	v0,4(sp)
+    1fa8:	afa30008 	sw	v1,8(sp)
+    1fac:	afa4000c 	sw	a0,12(sp)
+    1fb0:	afa50010 	sw	a1,16(sp)
+    1fb4:	afa60014 	sw	a2,20(sp)
+    1fb8:	afa70018 	sw	a3,24(sp)
+    1fbc:	afa8001c 	sw	t0,28(sp)
+    1fc0:	afa90020 	sw	t1,32(sp)
+    1fc4:	afaa0024 	sw	t2,36(sp)
+    1fc8:	afab0028 	sw	t3,40(sp)
+    1fcc:	afac002c 	sw	t4,44(sp)
+    1fd0:	afad0030 	sw	t5,48(sp)
+    1fd4:	afae0034 	sw	t6,52(sp)
+    1fd8:	afaf0038 	sw	t7,56(sp)
+    1fdc:	afb0003c 	sw	s0,60(sp)
+    1fe0:	afb10040 	sw	s1,64(sp)
+    1fe4:	afb20044 	sw	s2,68(sp)
+    1fe8:	afb30048 	sw	s3,72(sp)
+    1fec:	afb4004c 	sw	s4,76(sp)
+    1ff0:	afb50050 	sw	s5,80(sp)
+    1ff4:	afb60054 	sw	s6,84(sp)
+    1ff8:	afb70058 	sw	s7,88(sp)
+    1ffc:	afb8005c 	sw	t8,92(sp)
+    2000:	afb90060 	sw	t9,96(sp)
+    2004:	afbc0064 	sw	gp,100(sp)
+    2008:	afbe0068 	sw	s8,104(sp)
+    200c:	afbf006c 	sw	ra,108(sp)
+    2010:	401a6800 	mfc0	k0,c0_cause
+    2014:	001ad882 	srl	k1,k0,0x2
+    2018:	337b001f 	andi	k1,k1,0x1f
+    201c:	24080000 	li	t0,0
+    2020:	13680015 	beq	k1,t0,2078 <_int_handler>
+    2024:	00000000 	nop
+    2028:	00000000 	nop
+    202c:	24080008 	li	t0,8
+    2030:	13680023 	beq	k1,t0,20c0 <_syscall_handler>
+    2034:	00000000 	nop
+    2038:	00000000 	nop
+    203c:	2408000d 	li	t0,13
+    2040:	1368002c 	beq	k1,t0,20f4 <_trap_handler>
+    2044:	00000000 	nop
     2048:	00000000 	nop
-    204c:	08000823 	j	208c <_exception_return>
-    2050:	00000000 	nop
+    204c:	2408000c 	li	t0,12
+    2050:	13680030 	beq	k1,t0,2114 <_ov_handler>
     2054:	00000000 	nop
-
-00002058 <_advance_epc>:
-    2058:	401a7000 	mfc0	k0,c0_epc
-    205c:	401b6800 	mfc0	k1,c0_cause
-    2060:	001b47c2 	srl	t0,k1,0x1f
-    2064:	11000005 	beqz	t0,207c <_advance_epc+0x24>
+    2058:	00000000 	nop
+    205c:	2408000a 	li	t0,10
+    2060:	13680034 	beq	k1,t0,2134 <_invalid_instr_handler>
+    2064:	00000000 	nop
     2068:	00000000 	nop
-    206c:	00000000 	nop
-    2070:	10000003 	b	2080 <_advance_epc+0x28>
-    2074:	275a0008 	addiu	k0,k0,8
-    2078:	00000000 	nop
-    207c:	275a0004 	addiu	k0,k0,4
-    2080:	03e00008 	jr	ra
-    2084:	409a7000 	mtc0	k0,c0_epc
-    2088:	00000000 	nop
 
-0000208c <_exception_return>:
-    208c:	8fa10000 	lw	at,0(sp)
-    2090:	8fa20004 	lw	v0,4(sp)
-    2094:	8fa30008 	lw	v1,8(sp)
-    2098:	8fa4000c 	lw	a0,12(sp)
-    209c:	8fa50010 	lw	a1,16(sp)
-    20a0:	8fa60014 	lw	a2,20(sp)
-    20a4:	8fa70018 	lw	a3,24(sp)
-    20a8:	8fa8001c 	lw	t0,28(sp)
-    20ac:	8fa90020 	lw	t1,32(sp)
-    20b0:	8faa0024 	lw	t2,36(sp)
-    20b4:	8fab0028 	lw	t3,40(sp)
-    20b8:	8fac002c 	lw	t4,44(sp)
-    20bc:	8fad0030 	lw	t5,48(sp)
-    20c0:	8fae0034 	lw	t6,52(sp)
-    20c4:	8faf0038 	lw	t7,56(sp)
-    20c8:	8fb0003c 	lw	s0,60(sp)
-    20cc:	8fb10040 	lw	s1,64(sp)
-    20d0:	8fb20044 	lw	s2,68(sp)
-    20d4:	8fb30048 	lw	s3,72(sp)
-    20d8:	8fb4004c 	lw	s4,76(sp)
-    20dc:	8fb50050 	lw	s5,80(sp)
-    20e0:	8fb60054 	lw	s6,84(sp)
-    20e4:	8fb70058 	lw	s7,88(sp)
-    20e8:	8fb8005c 	lw	t8,92(sp)
-    20ec:	8fb90060 	lw	t9,96(sp)
-    20f0:	8fbc0064 	lw	gp,100(sp)
-    20f4:	8fbe0068 	lw	s8,104(sp)
-    20f8:	8fbf006c 	lw	ra,108(sp)
-    20fc:	27bd0080 	addiu	sp,sp,128
-    2100:	42000018 	eret
+0000206c <_unknown_exception>:
+    206c:	0800081b 	j	206c <_unknown_exception>
+    2070:	00000000 	nop
+    2074:	00000000 	nop
+
+00002078 <_int_handler>:
+    2078:	401a6800 	mfc0	k0,c0_cause
+    207c:	335a0400 	andi	k0,k0,0x400
+    2080:	1340000c 	beqz	k0,20b4 <_int_handler+0x3c>
+    2084:	00000000 	nop
+    2088:	00000000 	nop
+    208c:	3c1b0000 	lui	k1,0x0
+    2090:	277b2260 	addiu	k1,k1,8800
+    2094:	241a0001 	li	k0,1
+    2098:	af7a0000 	sw	k0,0(k1)
+    209c:	401a4800 	mfc0	k0,c0_count
+    20a0:	275a03e8 	addiu	k0,k0,1000
+    20a4:	409a5800 	mtc0	k0,c0_compare
+    20a8:	401a6800 	mfc0	k0,c0_cause
+    20ac:	375a0400 	ori	k0,k0,0x400
+    20b0:	409a6800 	mtc0	k0,c0_cause
+    20b4:	0800085f 	j	217c <_exception_return>
+    20b8:	00000000 	nop
+    20bc:	00000000 	nop
+
+000020c0 <_syscall_handler>:
+    20c0:	24080001 	li	t0,1
+    20c4:	14480006 	bne	v0,t0,20e0 <_syscall_handler+0x20>
+    20c8:	00000000 	nop
+    20cc:	00000000 	nop
+    20d0:	3c090000 	lui	t1,0x0
+    20d4:	25292254 	addiu	t1,t1,8788
+    20d8:	240a0001 	li	t2,1
+    20dc:	ad2a0000 	sw	t2,0(t1)
+    20e0:	0c000852 	jal	2148 <_advance_epc>
+    20e4:	00000000 	nop
+    20e8:	0800085f 	j	217c <_exception_return>
+    20ec:	00000000 	nop
+    20f0:	00000000 	nop
+
+000020f4 <_trap_handler>:
+    20f4:	3c090000 	lui	t1,0x0
+    20f8:	25292258 	addiu	t1,t1,8792
+    20fc:	240a0001 	li	t2,1
+    2100:	0c000852 	jal	2148 <_advance_epc>
+    2104:	ad2a0000 	sw	t2,0(t1)
+    2108:	0800085f 	j	217c <_exception_return>
+    210c:	00000000 	nop
+    2110:	00000000 	nop
+
+00002114 <_ov_handler>:
+    2114:	3c090000 	lui	t1,0x0
+    2118:	2529225c 	addiu	t1,t1,8796
+    211c:	240a0001 	li	t2,1
+    2120:	0c000852 	jal	2148 <_advance_epc>
+    2124:	ad2a0000 	sw	t2,0(t1)
+    2128:	0800085f 	j	217c <_exception_return>
+    212c:	00000000 	nop
+    2130:	00000000 	nop
+
+00002134 <_invalid_instr_handler>:
+    2134:	0c000852 	jal	2148 <_advance_epc>
+    2138:	00000000 	nop
+    213c:	0800085f 	j	217c <_exception_return>
+    2140:	00000000 	nop
+    2144:	00000000 	nop
+
+00002148 <_advance_epc>:
+    2148:	401a7000 	mfc0	k0,c0_epc
+    214c:	401b6800 	mfc0	k1,c0_cause
+    2150:	001b47c2 	srl	t0,k1,0x1f
+    2154:	11000005 	beqz	t0,216c <_advance_epc+0x24>
+    2158:	00000000 	nop
+    215c:	00000000 	nop
+    2160:	10000003 	b	2170 <_advance_epc+0x28>
+    2164:	275a0008 	addiu	k0,k0,8
+    2168:	00000000 	nop
+    216c:	275a0004 	addiu	k0,k0,4
+    2170:	03e00008 	jr	ra
+    2174:	409a7000 	mtc0	k0,c0_epc
+    2178:	00000000 	nop
+
+0000217c <_exception_return>:
+    217c:	8fa10000 	lw	at,0(sp)
+    2180:	8fa20004 	lw	v0,4(sp)
+    2184:	8fa30008 	lw	v1,8(sp)
+    2188:	8fa4000c 	lw	a0,12(sp)
+    218c:	8fa50010 	lw	a1,16(sp)
+    2190:	8fa60014 	lw	a2,20(sp)
+    2194:	8fa70018 	lw	a3,24(sp)
+    2198:	8fa8001c 	lw	t0,28(sp)
+    219c:	8fa90020 	lw	t1,32(sp)
+    21a0:	8faa0024 	lw	t2,36(sp)
+    21a4:	8fab0028 	lw	t3,40(sp)
+    21a8:	8fac002c 	lw	t4,44(sp)
+    21ac:	8fad0030 	lw	t5,48(sp)
+    21b0:	8fae0034 	lw	t6,52(sp)
+    21b4:	8faf0038 	lw	t7,56(sp)
+    21b8:	8fb0003c 	lw	s0,60(sp)
+    21bc:	8fb10040 	lw	s1,64(sp)
+    21c0:	8fb20044 	lw	s2,68(sp)
+    21c4:	8fb30048 	lw	s3,72(sp)
+    21c8:	8fb4004c 	lw	s4,76(sp)
+    21cc:	8fb50050 	lw	s5,80(sp)
+    21d0:	8fb60054 	lw	s6,84(sp)
+    21d4:	8fb70058 	lw	s7,88(sp)
+    21d8:	8fb8005c 	lw	t8,92(sp)
+    21dc:	8fb90060 	lw	t9,96(sp)
+    21e0:	8fbc0064 	lw	gp,100(sp)
+    21e4:	8fbe0068 	lw	s8,104(sp)
+    21e8:	8fbf006c 	lw	ra,108(sp)
+    21ec:	27bd0080 	addiu	sp,sp,128
+    21f0:	42000018 	eret
 	...
 
 Disassembly of section .reginfo:
 
-00002110 <.reginfo>:
-    2110:	fffffffe 	0xfffffffe
+00002200 <.reginfo>:
+    2200:	fffffffe 	0xfffffffe
 	...
 
 Disassembly of section .MIPS.abiflags:
 
-00002128 <.MIPS.abiflags>:
-    2128:	00002002 	srl	a0,zero,0x0
-    212c:	01010005 	lsa	zero,t0,at,0x1
+00002218 <.MIPS.abiflags>:
+    2218:	00002002 	srl	a0,zero,0x0
+    221c:	01010005 	lsa	zero,t0,at,0x1
 	...
 
 Disassembly of section .data:
 
-00002140 <test_data_base>:
-    2140:	12345678 	beq	s1,s4,17b24 <_stack_top+0x7b24>
-    2144:	89abcdef 	lwl	t3,-12817(t5)
-    2148:	76543210 	jalx	950c840 <_stack_top+0x94fc840>
-    214c:	00000000 	nop
+00002230 <test_data_base>:
+    2230:	12345678 	beq	s1,s4,17c14 <_stack_top+0x7c14>
+    2234:	89abcdef 	lwl	t3,-12817(t5)
+    2238:	76543210 	jalx	950c840 <_stack_top+0x94fc840>
+    223c:	00000000 	nop
 
-00002150 <test_bytes>:
-    2150:	55aa33cc 	bnel	t5,t2,f084 <__bss_end+0xcf14>
+00002240 <test_bytes>:
+    2240:	55aa33cc 	bnel	t5,t2,f174 <__bss_end+0xcf04>
 
-00002154 <test_halfs>:
-    2154:	11223344 	beq	t1,v0,ee68 <__bss_end+0xccf8>
+00002244 <test_halfs>:
+    2244:	11223344 	beq	t1,v0,ef58 <__bss_end+0xcce8>
 
-00002158 <unalign_data>:
-    2158:	aabbccdd 	swl	k1,-13091(s5)
-    215c:	11223344 	beq	t1,v0,ee70 <__bss_end+0xcd00>
+00002248 <unalign_data>:
+    2248:	aabbccdd 	swl	k1,-13091(s5)
+    224c:	11223344 	beq	t1,v0,ef60 <__bss_end+0xccf0>
 
-00002160 <ll_sc_var>:
-    2160:	00000000 	nop
+00002250 <ll_sc_var>:
+    2250:	00000000 	nop
 
-00002164 <syscall_flag>:
-    2164:	00000000 	nop
+00002254 <syscall_flag>:
+    2254:	00000000 	nop
 
-00002168 <trap_flag>:
-    2168:	00000000 	nop
+00002258 <trap_flag>:
+    2258:	00000000 	nop
 
-0000216c <ov_flag>:
-    216c:	00000000 	nop
+0000225c <ov_flag>:
+    225c:	00000000 	nop
+
+00002260 <timer_int_flag>:
+    2260:	00000000 	nop
+
+00002264 <int_count>:
+	...
 
 Disassembly of section .gnu.attributes:
 
