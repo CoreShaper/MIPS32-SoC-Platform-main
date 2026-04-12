@@ -9,9 +9,19 @@ MEMORY
 
 SECTIONS
 {
-    .text : {
-        *(.text.start)   /* 启动代码在最前面 */
-        *(.text*)
+    /* 启动代码段：必须放在 0x0 */
+    .text.start 0x00000000 : {
+        *(.text.start)
+    } > ram
+
+    /* 异常向量段：固定在 0x180 */
+    .exception 0x00000180 : {
+        *(.exception*)
+    } > ram
+
+    /* 其余普通代码段：紧接着异常向量之后（例如从 0x200 开始） */
+    .text 0x00000200 : {
+        *(.text)
     } > ram
 
     .rodata : {
@@ -29,7 +39,6 @@ SECTIONS
         __bss_end = .;
     } > ram
 
-    /* 栈顶放在 RAM 末尾 */
     _stack_top = ORIGIN(ram) + LENGTH(ram);
 }
 

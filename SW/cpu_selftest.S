@@ -18,6 +18,21 @@ unalign_data:
     .word 0xAABBCCDD, 0x11223344
 ll_sc_var:
     .word 0x00000000
+.align 2
+syscall_flag:   .word 0
+trap_flag:      .word 0
+ov_flag:        .word 0
+
+# ============================================================
+# 异常向量表
+# ============================================================
+.section .exception, "ax"
+.globl exception_handler
+exception_handler:
+    # 统一异常处理入口，记录异常类型并上报
+    j    _exception_entry
+    nop
+
 
     
 .section .text.start
@@ -59,12 +74,13 @@ _start:
     nop
 2:
 
+
     # ========== 依次调用各模块测试 ==========
     jal   test_logic
     nop
     
-    jal   test_shift
-    nop
+     jal   test_shift
+     nop
     # 后续模块测试调用暂时注释，待逐个添加
      jal   test_move
      nop
@@ -72,12 +88,19 @@ _start:
      nop
      jal   test_branch
      nop
-    # jal   test_load_store
-    # nop
+     jal   test_load_store
+     nop
      jal   test_hilo
      nop
-    # jal   test_cp0_exception
-    # nop
+     jal   test_cp0
+     nop
+     jal   test_exception
+     nop
+     jal   test_nop_sync
+     nop
+     jal   test_pipeline
+     nop
+
 
     # 全部通过
     li    $a0, PASS_CODE
@@ -98,6 +121,7 @@ report_result:
 1:  j     1b
     nop
 
+.section .text
 # ============================================================
 # 模块测试：Logic（细化版）ba
 # 错误码前缀：0xDEAD1100
@@ -107,7 +131,7 @@ test_logic:
     # ------------------ 子用例1: and (寄存器与) ------------------
     # 错误码: 0xDEAD1101
     li    $t0, 0x5A5A5A5A      # 01011010...
-    li    $t1, 0xA5A5A5A5      # 10100101...
+    li    $t1, 0xA5A5A5A5     # 10100101...
     and   $t2, $t0, $t1
     li    $t3, 0x00000000
     bne   $t2, $t3, fail_logic_1
@@ -227,11 +251,11 @@ test_logic:
     bne   $t1, $zero, fail_logic_15
     nop
 
-    # 全部通过，返回
-    jr    $ra
+     # 全部通过，返回
+     jr    $ra
     nop
 
-# ----- 失败跳转点（带细粒度错误码）-----
+// # ----- 失败跳转点（带细粒度错误码）-----
 fail_logic_1:
     li    $a0, 0xDEAD1101
     jal   report_result
@@ -776,28 +800,6 @@ test_arith:
 
      # ================== 边界测试 ==================
 
-    # ----- 子用例15: ADD 溢出 (正数溢出) -----
-    // # 注意：若CPU支持异常则可能跳转，这里只测结果是否不破坏目标寄存器（或触发异常机制）
-    // # 如果异常未实现，则只验证计算值；若实现异常，此处需配合异常处理测试。
-    // # 错误码: 0xDEAD140F
-    // li    $t0, 0x7FFFFFFF
-    // li    $t1, 0x7FFFFFFF
-    // add   $t2, $t0, $t1
-    // # 溢出时，根据MIPS规范，结果未定义，但通常为模2^32结果：0xFFFFFFFE
-    // # 这里仅作为边界用例占位，可根据实际实现调整
-    // li    $t3, 0xFFFFFFFE
-    // bne   $t2, $t3, fail_arith_15
-    // nop
-
-    // # ----- 子用例16: SUB 溢出 (负数溢出) -----
-    // # 错误码: 0xDEAD1410
-    // li    $t0, 0x80000000
-    // li    $t1, 1
-    // sub   $t2, $t0, $t1
-    // li    $t3, 0x7FFFFFFF
-    // bne   $t2, $t3, fail_arith_16
-    // nop
-
     # ----- 子用例17: 冒险 (ADD -> SUB 数据依赖) -----
     # 错误码: 0xDEAD1411
     li    $t0, 100
@@ -1146,9 +1148,7 @@ branch_raw_pass:
     .set reorder
     jr    $ra
     nop
-    .set reorder
-    jr    $ra
-    nop
+
 
 # ----- 失败跳转点 (0xDEAD1501 ~ 0xDEAD150F) -----
 fail_branch_1:   li $a0, 0xDEAD1501; jal report_result; nop
@@ -1174,9 +1174,7 @@ fail_branch_15:  li $a0, 0xDEAD150F; jal report_result; nop
 # ============================================================
 test_load_store:
     .set noreorder
-    # ===================== 基本对齐访存 =====================
-
-    # ----- 子用例1: LW / SW 基本对齐读写 -----
+       # ----- 子用例1: LW / SW 基本对齐读写 -----
     # 错误码: 0xDEAD1601
     la    $t0, test_data_base
     lw    $t1, 0($t0)               # 加载 0x12345678
@@ -1260,18 +1258,30 @@ test_load_store:
     bne   $t1, $t2, fail_ls_5
     nop
 
-    # ----- 子用例6: SWL / SWR 组合非对齐存储 -----
-    # 错误码: 0xDEAD1606
+# ----- 子用例6: SWL / SWR 组合非对齐存储（大端序，正确版）-----
+# 错误码: 0xDEAD1606
     la    $t0, test_data_base
-    addiu $t0, $t0, 12              # 使用预留区域
+    addiu $t0, $t0, 12              # $t0 指向第4个 word (地址 = test_data_base+12, 初始值 0x00000000)
     li    $t1, 0xDEADBEEF
-    swl   $t1, 1($t0)               # 非对齐存储高位
-    swr   $t1, 4($t0)               # 非对齐存储低位
-    # 验证：读回组合后的字
-    lw    $t2, 0($t0)
+
+    # 将 $t1 非对齐存储到地址 $t0+1（覆盖 $t0+1 ~ $t0+4）
+    swl   $t1, 4($t0)               # 写入 $t0+4(0xDE), $t0+3(0xAD), $t0+2(0xBE), $t0+1(0xEF)
+    swr   $t1, 1($t0)               # 写入 $t0+1(0xEF), $t0+2(0xBE), $t0+3(0xAD), $t0+4(0xDE) → 覆盖后为 0xEF,0xBE,0xAD,0xDE
+
+    # 从同一非对齐地址 $t0+1 读回
+    lwl   $t2, 4($t0)               # 读 $t0+4(0xDE), $t0+3(0xAD), $t0+2(0xBE), $t0+1(0xEF) → 高24位
+    lwr   $t2, 1($t0)               # 读 $t0+1(0xEF), $t0+2(0xBE), $t0+3(0xAD), $t0+4(0xDE) → 低8位并合并
+    # $t2 恢复为 0xDEADBEEF
+
     bne   $t2, $t1, fail_ls_6
     nop
-    sw    $zero, 0($t0)             # 恢复
+
+    # 恢复内存（清除写入的两个 word，避免影响后续测试）
+    sw    $zero, 0($t0)             # 清除 $t0 ~ $t0+3
+    sw    $zero, 4($t0)             # 清除 $t0+4 ~ $t0+7
+
+
+    
 
     # ===================== LL/SC 原子操作 =====================
 
@@ -1291,21 +1301,25 @@ try_sc:
     bne   $t3, $t4, fail_ls_7
     nop
 
-    # ----- 子用例8: SC 失败场景（LLbit 被清除）-----
+    # ----- 子用例8: SC 失败场景（LLbit 被另一个 sc 清除）-----
     # 错误码: 0xDEAD1608
     la    $t0, ll_sc_var
-    li    $t1, 0x100
-    sw    $t1, 0($t0)               # 写入初始值
-    ll    $t2, 0($t0)               # 设置 LLbit
-    # 故意用普通存储破坏链接
-    sw    $zero, 0($t0)
-    li    $t3, 0x200
-    sc    $t3, 0($t0)               # 应失败，$t3 返回 0
-    bne   $t3, $zero, fail_ls_8
+    sw    $zero, 0($t0)           # 初始化内存为 0
+    la    $t5, unalign_data       # 使用一个无关地址
+
+    ll    $t1, 0($t0)             # LLbit=1，链接地址 = ll_sc_var
+    # 执行一个对无关地址的 sc，这会清除 LLbit
+    sc    $zero, 0($t5)           # sc 失败（因为之前没有 ll 该地址），但会清除 LLbit
     nop
-    # 验证内存未被修改
-    lw    $t4, 0($t0)
-    bne   $t4, $zero, fail_ls_8
+
+    li    $t2, 0x200
+    sc    $t2, 0($t0)             # LLbit 已被清除，sc 应失败，$t2 返回 0
+    bne   $t2, $zero, fail_ls_8
+    nop
+
+    # 验证内存未被 sc 修改
+    lw    $t3, 0($t0)
+    bne   $t3, $zero, fail_ls_8
     nop
 
     # ===================== 边界测试 =====================
@@ -1401,22 +1415,23 @@ try_sc:
     # ----- 子用例13: LL/SC 边界地址及链接失效-----
     # 错误码: 0xDEAD160D
     la    $t0, ll_sc_var
-    # 地址非对齐访问（SC应失败或触发异常，此处仅验证不影响后续）
-    # 先正常初始化
-    sw    $zero, 0($t0)
-    # 故意在非对齐地址执行 LL（若硬件支持非对齐LL，则测试其行为）
-    ll    $t1, 0($t0)
-    # 用普通存储破坏
-    sw    $zero, 0($t0)
+    la    $t5, unalign_data       # 无关地址，用于清除 LLbit
+    sw    $zero, 0($t0)           # 初始化内存为 0
+
+    ll    $t1, 0($t0)             # LLbit=1，链接地址 = ll_sc_var
+    # 用另一个 sc 清除 LLbit（即使地址不匹配，sc 也会清除 LLbit）
+    sc    $zero, 0($t5)           # sc 失败，但会清除 LLbit
+    nop
+
     li    $t2, 0x1234
-    sc    $t2, 0($t0)               # 应失败
+    sc    $t2, 0($t0)             # LLbit 已清除，sc 应失败，$t2 返回 0
     bne   $t2, $zero, fail_ls_13
     nop
-    # 确保内存未被修改
+
+    # 确保内存未被 sc 修改
     lw    $t3, 0($t0)
     bne   $t3, $zero, fail_ls_13
     nop
-
     # 全部通过，返回
     .set reorder
     jr    $ra
@@ -1440,3 +1455,872 @@ fail_ls_11:  li $a0, 0xDEAD160B; jal report_result; nop
 fail_ls_12:  li $a0, 0xDEAD160C; jal report_result; nop
 fail_ls_13:  li $a0, 0xDEAD160D; jal report_result; nop
 
+# ============================================================
+# 模块测试：CP0（协处理器0寄存器访问及异常处理）
+# 错误码前缀：0xDEAD1800
+# 说明：
+#   - 第一阶段：基本读写与冒险测试（无需异常处理）
+#   - 第二阶段：Count 自增测试（无需异常处理）
+#   - 第三阶段：定时中断测试（需要异常处理，可先注释）
+# ============================================================
+test_cp0:
+    .set noreorder
+
+    # ===================== 第一阶段：基本读写与冒险 =====================
+
+    # ----- 子用例1: MTC0 / MFC0 Compare寄存器基本读写 -----
+    # 错误码: 0xDEAD1801
+    # Compare 寄存器 (rd=$11, sel=0) 可读写
+    li    $t0, 0x12345678
+    mtc0  $t0, $11, 0
+    mfc0  $t1, $11, 0
+    bne   $t0, $t1, fail_cp0_1
+    nop
+    # 写入另一个值验证
+    li    $t0, 0xAAAAAAAA
+    mtc0  $t0, $11, 0
+    mfc0  $t1, $11, 0
+    bne   $t0, $t1, fail_cp0_1
+    nop
+
+    # ----- 子用例2: MTC0 / MFC0 Status寄存器基本读写 -----
+    # 错误码: 0xDEAD1802
+    # Status 寄存器 (rd=$12, sel=0) 部分字段可读写，测试可写位
+    # 注意：Status 中 IM[7:0] 和 IE 等位可写，CU0 等只读，写入后读回可能不同
+    # 这里只验证可写位能够写入并读回
+    mfc0  $t0, $12, 0             # 保存原值
+    li    $t1, 0x0000FF01         # 设置 IM[7:0]=0xFF, IE=1
+    mtc0  $t1, $12, 0
+    mfc0  $t2, $12, 0
+    andi  $t2, $t2, 0x0000FF01    # 屏蔽只读位
+    bne   $t2, $t1, fail_cp0_2
+    nop
+    mtc0  $t0, $12, 0             # 恢复原值
+
+    # ----- 子用例3: 冒险测试（MTC0 后紧接 MFC0 同一寄存器）-----
+    # 错误码: 0xDEAD1803
+    li    $t0, 0x5A5A5A5A
+    mtc0  $t0, $11, 0
+    # 无任何 nop，直接读取，验证转发或互锁
+    mfc0  $t1, $11, 0
+    bne   $t0, $t1, fail_cp0_3
+    nop
+
+    # ----- 子用例4: 不同 CP0 寄存器独立性 -----
+    # 错误码: 0xDEAD1804
+    li    $t0, 0x11111111
+    li    $t1, 0x22222222
+    mtc0  $t0, $11, 0             # 写 Compare
+    mtc0  $t1, $12, 0             # 写 Status（可写位）
+    mfc0  $t2, $11, 0
+    bne   $t2, $t0, fail_cp0_4
+    nop
+    # 恢复 Status（清零可写位，根据实际实现调整）
+    mfc0  $t3, $12, 0
+    li    $t4, 0xFFFF0000         # 用 li 加载掩码（汇编器会展开为 lui+addiu）
+    and   $t3, $t3, $t4           # 保留高16位，清零低16位
+    mtc0  $t3, $12, 0
+
+    # ===================== 第二阶段：Count 自增测试 =====================
+
+    # ----- 子用例5: Count 寄存器可读且随时间递增 -----
+    # 错误码: 0xDEAD1805
+    # 注意：Count 寄存器不可写，只能读取
+    mfc0  $t0, $9, 0              # 第一次读取 Count
+    # 插入若干指令消耗时间
+    li    $t1, 100
+1:  addiu $t1, $t1, -1
+    bne   $t1, $zero, 1b
+    nop
+    mfc0  $t1, $9, 0              # 第二次读取 Count
+    subu  $t2, $t1, $t0
+    # 差值应大于 0（实际可能很大，这里简单验证非零）
+    beq   $t2, $zero, fail_cp0_5
+    nop
+
+    # ===================== 第三阶段：定时中断测试 =====================
+    # 以下测试需要完整的异常处理机制（异常向量、EPC、Cause、eret 等）
+    # 如果尚未实现，可以将整个第三阶段注释掉，不影响前两阶段运行。
+
+.if 0   # 将此处的 0 改为 1 以启用第三阶段测试
+
+    # ----- 子用例6: 定时中断触发与响应 -----
+    # 错误码: 0xDEAD1806
+    # 配置 Compare 触发中断，等待中断发生，在异常处理程序中验证并返回
+    # 此处需要预先安装异常处理程序，或假设 CPU 已有默认向量
+    # 简化版：直接读取 Cause 寄存器判断是否发生中断
+
+    # 先禁止中断，清除 Cause 中 IP 位
+    mfc0  $t0, $12, 0
+    li    $t0, 0xFFFF00FF   # 清零 IE 和 IM 位
+    mtc0  $t0, $12, 0
+
+    # 设置 Compare 为一个较小的未来值
+    mfc0  $t0, $9, 0             # 读取当前 Count
+    li $t0, 500          # 期望在 500 周期后触发
+    mtc0  $t0, $11, 0
+
+    # 清除 Cause 中的 IP[7]（定时器中断位）
+    mfc0  $t1, $13, 0
+    li    $t2, 0xFFFF7FFF
+    and   $t1, $t1, $t2
+    mtc0  $t1, $13, 0
+
+    # 使能中断：Status.IE=1, IM[7]=1
+    mfc0  $t0, $12, 0
+    ori   $t0, $t0, 0x00008001
+    mtc0  $t0, $12, 0
+
+    # 等待中断发生（循环直到 Cause.IP7=1）
+wait_int:
+    mfc0  $t1, $13, 0
+    andi  $t1, $t1, 0x00008000   # IP7 位
+    beq   $t1, $zero, wait_int
+    nop
+
+    # 中断已触发，验证 Cause.ExcCode 应为 0（硬件中断）
+    mfc0  $t2, $13, 0
+    srl   $t2, $t2, 2
+    andi  $t2, $t2, 0x1F
+    bne   $t2, $zero, fail_cp0_6   # 应为硬件中断码 0
+    nop
+
+    # 清除中断并返回（实际需要 eret，这里只做功能验证）
+    # 恢复 Status
+    mfc0  $t0, $12, 0
+    li $t0, 0xFFFF7FFE
+    mtc0  $t0, $12, 0
+
+    # ----- 子用例7: EPC 寄存器读写 -----
+    # 错误码: 0xDEAD1807
+    # EPC ($14) 在异常发生时保存返回地址，也可直接读写
+    la    $t0, epc_test_label
+    mtc0  $t0, $14, 0
+    mfc0  $t1, $14, 0
+    bne   $t0, $t1, fail_cp0_7
+    nop
+epc_test_label:
+    nop
+
+    # ----- 子用例8: Cause 寄存器字段读写 -----
+    # 错误码: 0xDEAD1808
+    # Cause 中只有部分字段可写（如 IP[1:0] 软件中断位），测试写入 IP1
+    mfc0  $t0, $13, 0
+    ori   $t0, $t0, 0x00000200   # 设置 IP1
+    mtc0  $t0, $13, 0
+    mfc0  $t1, $13, 0
+    andi  $t1, $t1, 0x00000200
+    beq   $t1, $zero, fail_cp0_8
+    nop
+    # 恢复
+    mfc0  $t0, $13, 0
+    li    $t2, 0xFFFFFDFF
+    and   $t0, $t0, $t2
+    mtc0  $t0, $13, 0
+
+.endif  # 第三阶段结束
+
+    # 全部通过，返回
+    .set reorder
+    jr    $ra
+    nop
+
+# ----- 失败跳转点 (0xDEAD1801 ~ 0xDEAD1808) -----
+fail_cp0_1:   li $a0, 0xDEAD1801; jal report_result; nop
+fail_cp0_2:   li $a0, 0xDEAD1802; jal report_result; nop
+fail_cp0_3:   li $a0, 0xDEAD1803; jal report_result; nop
+fail_cp0_4:   li $a0, 0xDEAD1804; jal report_result; nop
+fail_cp0_5:   li $a0, 0xDEAD1805; jal report_result; nop
+fail_cp0_6:   li $a0, 0xDEAD1806; jal report_result; nop
+fail_cp0_7:   li $a0, 0xDEAD1807; jal report_result; nop
+fail_cp0_8:   li $a0, 0xDEAD1808; jal report_result; nop
+
+# ============================================================
+# 模块测试：异常处理机制
+# 错误码前缀：0xDEAD1800
+# 说明：
+#   - 测试系统调用、自陷指令、溢出异常是否能正确触发并返回
+#   - 若异常未触发或处理程序未返回，则跳转到对应失败标签
+# ============================================================
+test_exception:
+    .set noreorder
+
+    # ------------------------------------------------------------
+    # 重新初始化 CP0，确保异常使能
+    # ------------------------------------------------------------
+    # Status 寄存器：设置 IM[7:0]=0xFF, IE=1，使能所有中断和异常
+    li    $t0, 0x0000FF01
+    mtc0  $t0, $12, 0
+    # 清除 Cause 寄存器中的残余状态
+    mtc0  $zero, $13, 0
+
+    # ----- 测试1: syscall -----
+    # 错误码: 0xDEAD1809
+    la    $t0, syscall_flag
+    sw    $zero, 0($t0)
+    li    $v0, 1
+    syscall
+    nop
+    la    $t0, syscall_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_1
+    nop
+
+    # ----- 测试2: teq -----
+    # 错误码: 0xDEAD180A
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 5
+    li    $t2, 5
+    teq   $t1, $t2
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_2
+    nop
+
+    # ----- 测试3: tne -----
+    # 错误码: 0xDEAD180B
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 1
+    li    $t2, 2
+    tne   $t1, $t2
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_3
+    nop
+
+    # ----- 测试4: tge -----
+    # 错误码: 0xDEAD180C
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 5
+    li    $t2, 3
+    tge   $t1, $t2
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_4
+    nop
+
+    # ----- 测试5: tgeu -----
+    # 错误码: 0xDEAD180D
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, -1
+    li    $t2, 1
+    tgeu  $t1, $t2
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_5
+    nop
+
+    # ----- 测试6: tlt -----
+    # 错误码: 0xDEAD180E
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 2
+    li    $t2, 5
+    tlt   $t1, $t2
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_6
+    nop
+
+    # ----- 测试7: tltu -----
+    # 错误码: 0xDEAD180F
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 1
+    li    $t2, 0x80000000
+    tltu  $t1, $t2
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_7
+    nop
+
+    # ----- 测试8: teqi -----
+    # 错误码: 0xDEAD1810
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 0x1234
+    teqi  $t1, 0x1234
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_8
+    nop
+
+    # ----- 测试9: tnei -----
+    # 错误码: 0xDEAD1811
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 0x1234
+    tnei  $t1, 0x5678
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_9
+    nop
+
+    # ----- 测试10: tgei -----
+    # 错误码: 0xDEAD1812
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 10
+    tgei  $t1, 5
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_10
+    nop
+
+    # ----- 测试11: tgeiu -----
+    # 错误码: 0xDEAD1813
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, -1
+    tgeiu $t1, 0x8000
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_11
+    nop
+
+    # ----- 测试12: tlti -----
+    # 错误码: 0xDEAD1814
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 3
+    tlti  $t1, 10
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_12
+    nop
+
+    # ----- 测试13: tltiu (使用寄存器形式) -----
+    # 错误码: 0xDEAD1815
+    la    $t0, trap_flag
+    sw    $zero, 0($t0)
+    li    $t1, 0x100
+    li    $t2, 0x80000000
+    tltu  $t1, $t2
+    nop
+    la    $t0, trap_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_13
+    nop
+
+    # ----- 测试14: 溢出异常 (add) -----
+    # 错误码: 0xDEAD1816
+    la    $t0, ov_flag
+    sw    $zero, 0($t0)
+    li    $t1, 0x7FFFFFFF
+    li    $t2, 0x7FFFFFFF
+    add   $t3, $t1, $t2
+    nop
+    la    $t0, ov_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_14
+    nop
+
+    # ----- 测试15: 溢出异常 (addi) -----
+    # 错误码: 0xDEAD1817
+    la    $t0, ov_flag
+    sw    $zero, 0($t0)
+    li    $t1, 0x7FFFFFFF
+    addi  $t2, $t1, 1
+    nop
+    la    $t0, ov_flag
+    lw    $t1, 0($t0)
+    li    $t2, 1
+    bne   $t1, $t2, fail_exception_15
+    nop
+
+    .set reorder
+    jr    $ra
+    nop
+
+# ============================================================
+# 失败跳转点（错误码 0xDEAD1809 ~ 0xDEAD1817）
+# ============================================================
+fail_exception_1:   li $a0, 0xDEAD1809; jal report_result; nop
+fail_exception_2:   li $a0, 0xDEAD180A; jal report_result; nop
+fail_exception_3:   li $a0, 0xDEAD180B; jal report_result; nop
+fail_exception_4:   li $a0, 0xDEAD180C; jal report_result; nop
+fail_exception_5:   li $a0, 0xDEAD180D; jal report_result; nop
+fail_exception_6:   li $a0, 0xDEAD180E; jal report_result; nop
+fail_exception_7:   li $a0, 0xDEAD180F; jal report_result; nop
+fail_exception_8:   li $a0, 0xDEAD1810; jal report_result; nop
+fail_exception_9:   li $a0, 0xDEAD1811; jal report_result; nop
+fail_exception_10:  li $a0, 0xDEAD1812; jal report_result; nop
+fail_exception_11:  li $a0, 0xDEAD1813; jal report_result; nop
+fail_exception_12:  li $a0, 0xDEAD1814; jal report_result; nop
+fail_exception_13:  li $a0, 0xDEAD1815; jal report_result; nop
+fail_exception_14:  li $a0, 0xDEAD1816; jal report_result; nop
+fail_exception_15:  li $a0, 0xDEAD1817; jal report_result; nop
+
+
+# ============================================================
+# 模块测试：NOP / SSNOP / SYNC / PREF (空操作指令)
+# 错误码前缀：0xDEAD1400 (沿用 arith 前缀，从 0xDEAD1412 开始)
+# ============================================================
+test_nop_sync:
+    .set noreorder
+
+    # ----- 子用例1: NOP 指令无副作用 -----
+    # 错误码: 0xDEAD1412
+    li    $t0, 0x12345678
+    li    $t1, 0x9ABCDEF0
+    nop                        # 纯空操作
+    nop
+    bne   $t0, $t1, 1f         # 故意用不相等比较，若寄存器被破坏则可能意外相等
+    nop
+    j     fail_nop_1
+    nop
+1:
+    # 验证 $t0 和 $t1 保持原值
+    li    $t2, 0x12345678
+    bne   $t0, $t2, fail_nop_1
+    nop
+    li    $t3, 0x9ABCDEF0
+    bne   $t1, $t3, fail_nop_1
+    nop
+
+    # ----- 子用例2: SSNOP 指令 (与 NOP 行为相同) -----
+    # 错误码: 0xDEAD1413
+    li    $t0, 0x5A5A5A5A
+    li    $t1, 0xA5A5A5A5
+    ssnop                      # 编译为 sll $0, $0, 1
+    bne   $t0, $t1, 1f
+    nop
+    j     fail_nop_2
+    nop
+1:
+    li    $t2, 0x5A5A5A5A
+    bne   $t0, $t2, fail_nop_2
+    nop
+    li    $t3, 0xA5A5A5A5
+    bne   $t1, $t3, fail_nop_2
+    nop
+
+    # ----- 子用例3: SYNC 指令 (空操作) -----
+    # 错误码: 0xDEAD1414
+    li    $t0, 0x11112222
+    li    $t1, 0x33334444
+    sync                       # 在 OpenMIPS 中应被视为 nop
+    bne   $t0, $t1, 1f
+    nop
+    j     fail_nop_3
+    nop
+1:
+    li    $t2, 0x11112222
+    bne   $t0, $t2, fail_nop_3
+    nop
+    li    $t3, 0x33334444
+    bne   $t1, $t3, fail_nop_3
+    nop
+
+    # ----- 子用例4: PREF 指令 (空操作) -----
+    # 错误码: 0xDEAD1415
+    li    $t0, 0xAAAA5555
+    li    $t1, 0x5555AAAA
+    # PREF 格式: pref hint, offset(base)
+    # 使用无害的预取提示 (hint=0) 和有效地址
+    la    $t4, test_data_base
+    pref   0, 0($t4)           # 应被忽略，不产生异常
+    nop
+    bne   $t0, $t1, 1f
+    nop
+    j     fail_nop_4
+    nop
+1:
+    li    $t2, 0xAAAA5555
+    bne   $t0, $t2, fail_nop_4
+    nop
+    li    $t3, 0x5555AAAA
+    bne   $t1, $t3, fail_nop_4
+    nop
+
+    # 全部通过
+    .set reorder
+    jr    $ra
+    nop
+
+# ----- 失败跳转点 -----
+fail_nop_1:   li $a0, 0xDEAD1412; jal report_result; nop
+fail_nop_2:   li $a0, 0xDEAD1413; jal report_result; nop
+fail_nop_3:   li $a0, 0xDEAD1414; jal report_result; nop
+fail_nop_4:   li $a0, 0xDEAD1415; jal report_result; nop
+
+
+
+
+# ============================================================
+# 模块测试：流水线机制（延迟槽、前推、互锁、冲刷）
+# 错误码前缀：0xDEAD1900
+# ============================================================
+test_pipeline:
+    .set noreorder
+
+    # ===================== 延迟槽测试 =====================
+
+    # ----- 子用例1: 延迟槽 - 分支发生 -----
+    # 错误码: 0xDEAD1901
+    li    $t0, 0x100
+    li    $t1, 0x100
+    beq   $t0, $t1, 1f
+    addiu $t0, $t0, 0x111       # 延迟槽：t0 = 0x211
+    j     fail_pipeline_1
+    nop
+1:
+    li    $t2, 0x211
+    bne   $t0, $t2, fail_pipeline_1
+    nop
+
+    # ----- 子用例2: 延迟槽 - 分支不发生 -----
+    # 错误码: 0xDEAD1902
+    li    $t0, 0x100
+    li    $t1, 0x200
+    beq   $t0, $t1, 2f
+    addiu $t0, $t0, 0x111       # 延迟槽：t0 = 0x211（必须执行）
+    j     3f
+    nop
+2:  # 意外跳转
+    j     fail_pipeline_2
+    nop
+3:
+    li    $t2, 0x211
+    bne   $t0, $t2, fail_pipeline_2
+    nop
+
+
+addiu $sp, $sp, -4
+sw    $ra, 0($sp)
+    # ----- 子用例3: 延迟槽 - 跳转并链接 -----
+    # 错误码: 0xDEAD1903
+    li    $t0, 0x55
+    jal   delay_slot_target
+    addiu $t0, $t0, 0x11        # 延迟槽：t0 = 0x66
+    # 返回后检查 t0
+    li    $t1, 0x66
+    bne   $t0, $t1, fail_pipeline_3
+    nop
+    j     delay_slot_done
+    nop
+
+delay_slot_target:
+    # 验证 $ra 有效，并检查 t0 已被延迟槽修改
+    li    $t2, 0x66
+    bne   $t0, $t2, fail_pipeline_3
+    nop
+    jr    $ra
+    nop
+delay_slot_done:
+lw    $ra, 0($sp)
+addiu $sp, $sp, 4
+
+    # ===================== 数据前推测试 =====================
+
+    # ----- 子用例4: EX 冒险 (ALU -> ALU) -----
+    # 错误码: 0xDEAD1904
+    li    $t0, 5
+    addiu $t1, $t0, 5           # t1 = 10
+    addu  $t2, $t1, $t0         # t2 = 10 + 5 = 15
+    li    $t3, 15
+    bne   $t2, $t3, fail_pipeline_4
+    nop
+
+    # ----- 子用例5: MEM 冒险 (Load -> ALU) -----
+    # 错误码: 0xDEAD1905
+    la    $t0, test_data_base   # 数据段中预置 0x12345678
+    lw    $t1, 0($t0)           # t1 = 0x12345678
+    addiu $t2, $t1, 1           # t2 = 0x12345679
+    li    $t3, 0x12345679
+    bne   $t2, $t3, fail_pipeline_5
+    nop
+
+    # ----- 子用例6: HI/LO 冒险 (MTHI -> MFHI) -----
+    # 错误码: 0xDEAD1906
+    li    $t0, 0x12345678
+    mthi  $t0
+    mfhi  $t1
+    bne   $t1, $t0, fail_pipeline_6
+    nop
+
+    # ----- 子用例7: 多重 HI/LO 冒险 -----
+    # 错误码: 0xDEAD1907
+    li    $t0, 0x11112222
+    li    $t1, 0x33334444
+    mthi  $t0
+    mtlo  $t1
+    mfhi  $t2
+    mflo  $t3
+    bne   $t2, $t0, fail_pipeline_7
+    bne   $t3, $t1, fail_pipeline_7
+    nop
+
+    # ===================== Load-Use 互锁测试 =====================
+
+    # ----- 子用例8: LW 后紧接依赖指令 -----
+    # 错误码: 0xDEAD1908
+    la    $t0, test_data_base
+    lw    $t1, 0($t0)           # 加载 0x12345678
+    addiu $t2, $t1, 1           # 依赖 t1，硬件应插入一个气泡
+    li    $t3, 0x12345679
+    bne   $t2, $t3, fail_pipeline_8
+    nop
+
+    # ===================== 流水线冲刷测试 =====================
+
+    # ----- 子用例9: 分支成立时冲刷错误路径指令 -----
+    # 错误码: 0xDEAD1909
+    li    $t0, 5
+    li    $t1, 5
+    li    $t5, 0                # t5 初始为 0
+    beq   $t0, $t1, 1f
+    nop
+    addiu $t5, $t5, 1           # 错误路径：若未冲刷，t5 会变为 1
+    # 若未跳转，失败
+    j     fail_pipeline_9
+    nop
+1:
+    # 验证 t5 仍为 0（冲刷成功）
+    bne   $t5, $zero, fail_pipeline_9
+    nop
+
+    # ----- 子用例10: 分支不成立时不冲刷（验证正确路径执行）-----
+    # 错误码: 0xDEAD190A
+    li    $t0, 5
+    li    $t1, 6
+    li    $t5, 0
+    beq   $t0, $t1, 2f
+    addiu $t5, $t5, 1           # 正确路径：应执行，t5 变为 1
+    j     3f
+    nop
+2:  # 意外跳转
+    j     fail_pipeline_10
+    nop
+3:
+    li    $t6, 1
+    bne   $t5, $t6, fail_pipeline_10
+    nop
+
+    # 全部通过
+    .set reorder
+    jr    $ra
+    nop
+
+# ============================================================
+# 失败跳转点 (0xDEAD1901 ~ 0xDEAD190A)
+# ============================================================
+fail_pipeline_1:  li $a0, 0xDEAD1901; jal report_result; nop
+fail_pipeline_2:  li $a0, 0xDEAD1902; jal report_result; nop
+fail_pipeline_3:  li $a0, 0xDEAD1903; jal report_result; nop
+fail_pipeline_4:  li $a0, 0xDEAD1904; jal report_result; nop
+fail_pipeline_5:  li $a0, 0xDEAD1905; jal report_result; nop
+fail_pipeline_6:  li $a0, 0xDEAD1906; jal report_result; nop
+fail_pipeline_7:  li $a0, 0xDEAD1907; jal report_result; nop
+fail_pipeline_8:  li $a0, 0xDEAD1908; jal report_result; nop
+fail_pipeline_9:  li $a0, 0xDEAD1909; jal report_result; nop
+fail_pipeline_10: li $a0, 0xDEAD190A; jal report_result; nop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ============================================================
+# 异常处理主入口
+# ============================================================
+    .globl _exception_entry
+    .set   noat
+
+_exception_entry:
+    addiu  $sp, $sp, -128
+
+    sw     $at,   0($sp)
+    sw     $v0,   4($sp)
+    sw     $v1,   8($sp)
+    sw     $a0,  12($sp)
+    sw     $a1,  16($sp)
+    sw     $a2,  20($sp)
+    sw     $a3,  24($sp)
+    sw     $t0,  28($sp)
+    sw     $t1,  32($sp)
+    sw     $t2,  36($sp)
+    sw     $t3,  40($sp)
+    sw     $t4,  44($sp)
+    sw     $t5,  48($sp)
+    sw     $t6,  52($sp)
+    sw     $t7,  56($sp)
+    sw     $s0,  60($sp)
+    sw     $s1,  64($sp)
+    sw     $s2,  68($sp)
+    sw     $s3,  72($sp)
+    sw     $s4,  76($sp)
+    sw     $s5,  80($sp)
+    sw     $s6,  84($sp)
+    sw     $s7,  88($sp)
+    sw     $t8,  92($sp)
+    sw     $t9,  96($sp)
+    sw     $gp, 100($sp)
+    sw     $fp, 104($sp)
+    sw     $ra, 108($sp)
+
+    mfc0   $k0, $13
+    srl    $k1, $k0, 2
+    andi   $k1, $k1, 0x1f
+
+    li     $t0, 0x00
+    beq    $k1, $t0, _int_handler
+    nop
+
+    li     $t0, 0x08
+    beq    $k1, $t0, _syscall_handler
+    nop
+
+    li     $t0, 0x0d
+    beq    $k1, $t0, _trap_handler
+    nop
+
+    li     $t0, 0x0c
+    beq    $k1, $t0, _ov_handler
+    nop
+
+    li     $t0, 0x0a
+    beq    $k1, $t0, _invalid_instr_handler
+    nop
+
+_unknown_exception:
+    j      _unknown_exception
+    nop
+
+_int_handler:
+    # 处理中断源 / 清中断
+    # 中断一般不改 EPC
+    j      _exception_return
+    nop
+
+_syscall_handler:
+    li    $t0, 1
+    bne   $v0, $t0, 1f
+    nop
+    la    $t1, syscall_flag
+    li    $t2, 1
+    sw    $t2, 0($t1)
+1:
+    jal   _advance_epc
+    nop
+    j     _exception_return
+    nop
+
+_trap_handler:
+    la    $t1, trap_flag
+    li    $t2, 1
+    sw    $t2, 0($t1)
+    jal   _advance_epc
+    nop
+    j     _exception_return
+    nop
+
+_ov_handler:
+    la    $t1, ov_flag
+    li    $t2, 1
+    sw    $t2, 0($t1)
+    jal   _advance_epc
+    nop
+    j     _exception_return
+    nop
+
+_invalid_instr_handler:
+    jal    _advance_epc
+    nop
+    j      _exception_return
+    nop
+
+_advance_epc:
+    mfc0   $k0, $14          # EPC
+    mfc0   $k1, $13          # Cause
+    srl    $t0, $k1, 31      # BD
+
+    beq    $t0, $zero, 1f
+    nop
+    addiu  $k0, $k0, 8
+    b      2f
+    nop
+
+1:
+    addiu  $k0, $k0, 4
+2:
+    mtc0   $k0, $14
+    jr     $ra
+    nop
+
+_exception_return:
+    lw     $at,   0($sp)
+    lw     $v0,   4($sp)
+    lw     $v1,   8($sp)
+    lw     $a0,  12($sp)
+    lw     $a1,  16($sp)
+    lw     $a2,  20($sp)
+    lw     $a3,  24($sp)
+    lw     $t0,  28($sp)
+    lw     $t1,  32($sp)
+    lw     $t2,  36($sp)
+    lw     $t3,  40($sp)
+    lw     $t4,  44($sp)
+    lw     $t5,  48($sp)
+    lw     $t6,  52($sp)
+    lw     $t7,  56($sp)
+    lw     $s0,  60($sp)
+    lw     $s1,  64($sp)
+    lw     $s2,  68($sp)
+    lw     $s3,  72($sp)
+    lw     $s4,  76($sp)
+    lw     $s5,  80($sp)
+    lw     $s6,  84($sp)
+    lw     $s7,  88($sp)
+    lw     $t8,  92($sp)
+    lw     $t9,  96($sp)
+    lw     $gp, 100($sp)
+    lw     $fp, 104($sp)
+    lw     $ra, 108($sp)
+
+    addiu  $sp, $sp, 128
+    eret
+
+    .set   at

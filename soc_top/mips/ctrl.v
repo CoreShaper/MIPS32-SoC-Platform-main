@@ -34,19 +34,19 @@ module ctrl(
 		  stall <= 6'b000000;
 			case (excepttype_i)
 				32'h00000001:		begin   //interrupt
-					new_pc <= 32'h00000020;
+					new_pc <= 32'h00000180;
 				end
 				32'h00000008:		begin   //syscall
-					new_pc <= 32'h00000040;
+					new_pc <= 32'h00000180;
 				end
 				32'h0000000a:		begin   //inst_invalid
-					new_pc <= 32'h00000040;
+					new_pc <= 32'h00000180;
 				end
 				32'h0000000d:		begin   //trap
-					new_pc <= 32'h00000040;
+					new_pc <= 32'h00000180;
 				end
 				32'h0000000c:		begin   //ov
-					new_pc <= 32'h00000040;
+					new_pc <= 32'h00000180;
 				end
 				32'h0000000e:		begin   //eret
 					new_pc <= cp0_epc_i;
