@@ -63,21 +63,28 @@ module mysoc (
     // 地址译码与仿真控制寄存器
     // ============================================================
     reg  [31:0] sim_ctrl_reg;
+    reg  [31:0] sim_dbg_out; // 可选：第二个仿真控制寄存器
     wire        is_sim_ctrl_addr;
 
-    assign is_sim_ctrl_addr = (data_addr == 32'hFFFFFFF0) && data_ce;
+    assign is_sim_ctrl_addr = ((data_addr == 32'hFFFFFFF0) | (data_addr == 32'hFFFFFFE0)) && data_ce;
 
     // 写操作（异步复位，同步写）
     always @(posedge clk or posedge rst) begin
         if (rst) begin
             sim_ctrl_reg <= 32'h0;
+            sim_dbg_out <= 32'h0; // 可选：第二个仿真控制寄存器
         end else if (data_ce && data_we && is_sim_ctrl_addr) begin
-            sim_ctrl_reg <= data_wdata;      // 使用 data_wdata 而非 data_data_o
+                    if (data_addr == 32'hFFFFFFF0) begin
+                        sim_ctrl_reg <= data_wdata;      // 使用 data_wdata 而非 data_data_o
+                    end else if (data_addr == 32'hFFFFFFE0) begin
+                        sim_dbg_out <= data_wdata;      // 可选：第二个仿真控制寄存器
+                    end
         end
     end
 
     // 读操作：返回寄存器值（可根据需要改为返回 0）
-     assign data_rdata = is_sim_ctrl_addr ? 32'h0 : ram_rdata;   // 原写法
+     assign data_rdata = is_sim_ctrl_addr ? (data_addr == 32'hFFFFFFF0 ? sim_ctrl_reg : sim_dbg_out) : ram_rdata; // 可选：返回寄存器值
+
 
 
     // ============================================================

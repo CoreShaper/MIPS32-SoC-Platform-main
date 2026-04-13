@@ -52,6 +52,18 @@ always @(posedge CLOCK_50) begin
     end
 end
 
+// 在 testbench 中
+wire [31:0] sim_dbg_val = myopenmips_min_sopc0.sim_dbg_out;
+reg  [31:0] prev_dbg_val = 0;
+
+always @(posedge CLOCK_50) begin
+    if (!rst &&
+        myopenmips_min_sopc0.data_ce &&
+        myopenmips_min_sopc0.data_we &&
+        (myopenmips_min_sopc0.data_addr == 32'hFFFFFFE0)) begin
+        $write("%c", myopenmips_min_sopc0.data_wdata[7:0]);
+    end
+end
     // 超时保护（可选，建议保留以防程序跑飞）
     initial begin
         #100000;
