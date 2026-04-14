@@ -1,106 +1,76 @@
-
-# cpu-soc-platform
-
-基于 Verilog 实现的 MIPS 架构 CPU 核心，支持 80 余条 MIPS 指令，封装为模块化 SoC 平台，采用 AXI-Lite 总线互联并挂载 GPIO 外设。平台支持 MIPS 程序编译与板级运行，适合作为学习 CPU 架构、SoC 系统集成和 AXI 总线开发的参考项目。
-
----
-
-## 🚀 项目特色
-
-- ✅ 实现 MIPS 架构 80+ 指令（参考《自己动手做CPU》）
-- ✅ 基于 AXI-Lite 总线封装 CPU 核心，接口标准、可扩展
-- ✅ 构建完整 SoC 平台并挂载 GPIO 外设模块
-- ✅ 支持交叉编译 MIPS 程序 + 板级加载运行验证
-- ✅ 提供完整 Vivado 工程，支持上板测试和波形仿真
-- ⚠️ 当前 AXI-Lite 接口存在已知时序 Bug，欢迎参与修复
-
----
-
-## 🧱 项目目录结构
-
-```bash
+# MIPS CPU SoC Platform
+## 1. 项目简介
+这是一个基于 Verilog 的 MIPS CPU SoC 仿真平台，当前版本已经打通从裸机软件构建到 RTL 仿真的完整链路，包括：CPU 执行、片上双口 RAM、异常/中断处理、仿真 PASS/FAIL 控制以及 `printf_sim` 调试输出。
+## 2. 当前版本实现内容
+- `openmips` MIPS CPU 核
+- 双口 RAM 指令/数据存储结构
+- 基于 MMIO 地址译码的最小 SoC 顶层
+- 仿真控制寄存器 `SIM_CTRL`
+- 仿真调试输出寄存器 `SIM_DBG_OUT`
+- MIPS 裸机软件链路：启动、链接、异常入口、中断分发
+- `printf_sim` 轻量调试输出接口
+- Icarus Verilog + GTKWave 仿真支持
+## 3. 工程结构
+```text
 .
-├── axi_lite_bus/     # AXI-Lite 总线接口模块
-├── cpu_core/         # MIPS CPU 核心（AXI-Lite 接口，支持80+指令）
-├── docs/             # 技术文档与调试记录
-├── peripherals/      # GPIO 等外设模块
-├── soc_top/          # 顶层 SoC 平台封装
-├── software/         # MIPS 汇编测试程序
-├── test_bench/       # 仿真验证平台
-└── Reference/        # 编译与开发参考资料
+├── Makefile
+├── Makefile.sim
+├── filelist.f
+├── soc_top/
+├── SW/
+├── test_bench/
+├── Reference/
+└── cpu_test.gtkw
 ```
-
----
-
-## 🛠 安装与运行说明
-
-### 1️⃣ 准备交叉编译工具链
-
-本项目使用 `mips_gcc` 工具链进行 MIPS 汇编程序编译。建议使用 Linux 环境（如 Ubuntu 虚拟机）完成交叉编译配置。
-
-安装示例：
+## 4. 环境要求
+建议在 Linux 环境下运行，并安装以下工具：
 ```bash
-sudo apt install gcc-mips-linux-gnu
+sudo apt install gcc-mips-linux-gnu iverilog gtkwave
 ```
-
-
-
----
-
-### 2️⃣ Vivado 环境准备
-
-- 使用 Vivado 2020.2+ 版本开发
-- 安装完成后，配置系统 PATH 环境变量
-- 打开 Vivado → 导入工程 → 设置顶层模块为 `soc_top`
-
----
-
-### 3️⃣ 编译与上板运行
-
-#### 编译 CPU 程序
-1. 在 `software/` 编写 MIPS 汇编或 C 程序
-2. 使用 `mips_gcc` 交叉编译生成 `.bin`
-
-#### 下载 bitstream 至 FPGA
-
-1. Vivado → 综合 → 实现 → 生成比特流
-2. 下载至 FPGA 板卡进行 LED 闪烁 / IO 控制验证
-
----
-
-## 📌 使用说明
-
-- `cpu_core/` 为可复用的 MIPS CPU AXI-Lite 核心，可单独移植
-- `soc_top/` 为平台封装模块，用于集成 CPU + 外设 + 总线
-- `board_test/` 为针对特定板卡的验证工程，需要绑定实际引脚
-- 所有模块接口文档见 `docs/interface_map.md`
-
----
-
-## ⚠️ 已知问题与说明
-
-- 当前 AXI-Lite 接口存在 `WREADY` 同步问题，
-- GPIO 模块测试通过，但外设扩展部分接口尚未规范
-- 软件加载方式暂未实现片上 Flash 支持，仅支持硬编码方式
-
----
-
-## 🧩 后续计划
-
-- [ ] 修复 AXI-Lite 写通道握手 bug
-- [ ] 封装 AXI-Full → AXI-Lite 转换桥
-- [ ] 添加 UART 与计时器外设模块
-- [ ] 提供多个 demo：流水灯、串口收发、GPIO 输入检测
-- [ ] 输出教学型文档 / 视频教程
-
----
-
-## 📖 参考资料
-
-- 《自己动手做CPU》书籍（指令集参考）
-- Xilinx AXI-Lite 协议规范
-- Vivado 官方开发文档
-
----
-
-> 本项目基于学习与实验目的开发，欢迎交流讨论与 PR 合作 🤝
+## 5. 快速开始
+### 5.1 一键运行
+在工程根目录执行：
+```bash
+make
+```
+该命令会：
+1. 编译 `SW/` 下的软件源码
+2. 生成 `SW/obj/program.hex`
+3. 编译 RTL 与 testbench
+4. 运行仿真
+### 5.2 分步执行
+只编译软件：
+```bash
+make sw
+```
+只运行仿真：
+```bash
+make run
+```
+查看波形：
+```bash
+make wave
+```
+清理生成文件：
+```bash
+make clean
+```
+### 5.3 关键输出文件
+```text
+SW/obj/program.elf   # 链接后的裸机 ELF
+SW/obj/program.bin   # 二进制镜像
+SW/obj/program.hex   # 供 RAM 初始化加载
+SW/obj/program.dis   # 反汇编结果
+simv                 # 仿真可执行文件
+waveform.vcd         # 波形文件
+```
+## 6. 仿真输出说明
+### 6.1 PASS/FAIL
+软件通过向 `0xFFFFFFF0` 写入控制码向 testbench 报告结果：
+- `0x00000001`：PASS
+- `0xDEADxxxx`：FAIL
+### 6.2 printf_sim 调试输出
+软件通过向 `0xFFFFFFE0` 写入字符实现调试打印，testbench 检测该地址上的写事务后，将低 8 位按 ASCII 输出到控制台。
+## 7. 详细文档入口
+详细的工程说明、目录结构、硬件/软件/仿真链路、Makefile 作用、默认地址约定等内容见：
+- `mips_cpu_soc_说明.md`
