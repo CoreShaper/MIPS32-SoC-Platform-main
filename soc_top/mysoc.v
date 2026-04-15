@@ -1,5 +1,5 @@
 `include "mydefines.v"
-
+`timescale 1ns/1ps
 module mysoc (
     input  wire         clk,
     input  wire         rst,
@@ -83,25 +83,25 @@ module mysoc (
     end
 
     // 读操作：返回寄存器值（可根据需要改为返回 0）
-     assign data_rdata = is_sim_ctrl_addr ? (data_addr == 32'hFFFFFFF0 ? sim_ctrl_reg : sim_dbg_out) : ram_rdata; // 可选：返回寄存器值
+     assign data_rdata = is_sim_ctrl_addr ? (data_addr == 32'hFFFFFFF0 ? sim_ctrl_reg : sim_dbg_out) : dbus_rdata; // 可选：返回寄存器值
 
 
 
     // ============================================================
     // 双口 RAM 接口信号（屏蔽仿真控制寄存器地址）
     // ============================================================
-    wire        ram_ce;
-    wire        ram_we;
-    wire [3:0]  ram_sel;
-    wire [31:0] ram_addr;
-    wire [31:0] ram_wdata;
-    wire [31:0] ram_rdata;
+    wire        dbus_ce;
+    wire        dbus_we;
+    wire [3:0]  dbus_sel;
+    wire [31:0] dbus_addr;
+    wire [31:0] dbus_wdata;
+    wire [31:0] dbus_rdata;
 
-    assign ram_ce    = data_ce && !is_sim_ctrl_addr;
-    assign ram_we    = data_we && !is_sim_ctrl_addr;
-    assign ram_sel   = data_sel;
-    assign ram_addr  = data_addr;
-    assign ram_wdata = data_wdata;           // 使用 data_wdata
+    assign dbus_ce    = data_ce && !is_sim_ctrl_addr;
+    assign dbus_we    = data_we && !is_sim_ctrl_addr;
+    assign dbus_sel   = data_sel;
+    assign dbus_addr  = data_addr;
+    assign dbus_wdata = data_wdata;           // 使用 data_wdata
 
     // ============================================================
     // 双口 RAM 实例化
@@ -119,12 +119,12 @@ module mysoc (
         .i_rdata  (inst_data),
 
         // 数据端口
-        .d_ce     (ram_ce),
-        .d_we     (ram_we),
-        .d_sel    (ram_sel),
-        .d_addr   (ram_addr),
-        .d_wdata  (ram_wdata),
-        .d_rdata  (ram_rdata)
+        .d_ce     (dbus_ce),
+        .d_we     (dbus_we),
+        .d_sel    (dbus_sel),
+        .d_addr   (dbus_addr),
+        .d_wdata  (dbus_wdata),
+        .d_rdata  (dbus_rdata)
     );
 
     // ============================================================
@@ -133,3 +133,4 @@ module mysoc (
     assign GPIO01 = 1'b0;
 
 endmodule
+

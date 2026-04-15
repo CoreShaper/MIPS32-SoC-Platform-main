@@ -1,7 +1,7 @@
 
 
 `include "defines.v"
-
+`timescale 1ns/1ps
 module ex(
 
 	input wire										rst,
@@ -199,7 +199,7 @@ module ex(
 		end else begin
 			case (aluop_i)
 				`EXE_SLT_OP, `EXE_SLTU_OP:		begin
-					arithmeticres <= reg1_lt_reg2 ;
+					arithmeticres <= {31'b0, reg1_lt_reg2};
 				end
 				`EXE_ADD_OP, `EXE_ADDU_OP, `EXE_ADDI_OP, `EXE_ADDIU_OP:		begin
 					arithmeticres <= result_sum; 

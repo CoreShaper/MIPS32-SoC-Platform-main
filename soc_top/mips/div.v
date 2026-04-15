@@ -1,7 +1,7 @@
 
 
 `include "defines.v"
-
+`timescale 1ns/1ps
 module div(
 
 	input	wire										clk,
@@ -51,7 +51,7 @@ module div(
 		  				end else begin
 		  					temp_op2 = opdata2_i;
 		  				end
-		  				dividend <= {`ZeroWord,`ZeroWord};
+		  				dividend <= {65{1'b0}};
               dividend[32:1] <= temp_op1;
               divisor <= temp_op2;
              end
@@ -61,7 +61,7 @@ module div(
 				  end          	
 		  	end
 		  	`DivByZero:		begin               //DivByZero״̬
-         	dividend <= {`ZeroWord,`ZeroWord};
+         	dividend <= {65{1'b0}};
           state <= `DivEnd;		 		
 		  	end
 		  	`DivOn:				begin               //DivOn״̬

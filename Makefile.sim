@@ -1,5 +1,7 @@
+# ============================================================================
 # 仿真 Makefile
-# 使用方法：make -f Makefile.sim [compile|run|wave|clean]
+# 使用方法：make -f Makefile.sim [compile|run|wave|clean|lint|check]
+# ============================================================================
 
 IVL = iverilog
 VVP = vvp
@@ -10,17 +12,25 @@ RTL_DIR = soc_top
 MIPS_DIR = soc_top/mips
 TB_DIR = test_bench
 
-# Include 路径
-INC = -I $(MIPS_DIR) -I $(RTL_DIR)
+# Include 路径（用于 Icarus 和 Verilator）
+INC_ICARUS = -I $(MIPS_DIR) -I $(RTL_DIR)
 
-# 顶层模块名
+# Verilator 的 -I 要求紧贴目录，且推荐使用绝对路径
+RTL_ABS = $(shell pwd)/$(RTL_DIR)
+MIPS_ABS = $(shell pwd)/$(MIPS_DIR)
+INC_VERILATOR = -I$(RTL_ABS) -I$(MIPS_ABS)
+
+# 顶层模块名（仿真用）
 TOP_MODULE = myopenmips_min_sopc_tb
+# Lint 检查的纯设计顶层
+LINT_TOP = mysoc
 
 # 输出可执行文件名
 SIM_EXE = simv
 
 # 波形文件
 WAVE = waveform.vcd
+LINT_LOG = lint.log
 
 # 文件列表
 FILELIST = filelist.f
@@ -28,33 +38,58 @@ FILELIST = filelist.f
 # 所有源文件（从 filelist.f 读取 + testbench）
 SRCS = $(shell cat $(FILELIST)) $(TB_DIR)/myopenmips_min_sopc_tb.v
 
-# 默认目标：编译并运行
+# ============================================================================
+# 目标定义
+# ============================================================================
+
+.PHONY: all compile run wave clean rebuild show_srcs lint check
+
 all: run
 
-# 编译
 compile: $(SIM_EXE)
 
 $(SIM_EXE): $(SRCS)
-	$(IVL) -o $@ -s $(TOP_MODULE) $(INC) $(SRCS)
+	$(IVL) -o $@ -s $(TOP_MODULE) $(INC_ICARUS) $(SRCS)
 
-# 运行仿真
 run: $(SIM_EXE)
 	$(VVP) $(SIM_EXE)
 
-# 查看波形
 wave: $(WAVE)
 	$(GTKWAVE) $(WAVE) &
 
-# 清理
 clean:
-	rm -f $(SIM_EXE) $(WAVE)
+	rm -f $(SIM_EXE) $(WAVE) $(LINT_LOG)
 
-# 完全重新编译
 rebuild: clean compile
 
-# 显示源文件列表（调试用）
 show_srcs:
 	@echo "Source files:"
 	@echo "$(SRCS)" | tr ' ' '\n'
 
-.PHONY: all compile run wave clean rebuild show_srcs
+# ----------------------------------------------------------------------------
+# RTL 静态检查（Verilator）
+# ----------------------------------------------------------------------------
+.PHONY: lint
+lint:
+	@echo "=== Running Verilator lint check on RTL ===" | tee $(LINT_LOG)
+# 检查文件列表是否为空或文件不存在
+	@for file in $(SRCS); do \
+		if [ ! -f "$$file" ]; then \
+			echo "Error: Source file '$$file' not found."; \
+			exit 1; \
+		fi; \
+	done
+# 执行 Verilator lint 检查
+	@verilator --lint-only -Wall -Wno-fatal -Wno-UNUSED -Wno-EOFNEWLINE \
+	          --top-module $(LINT_TOP) \
+	          $(INC_VERILATOR) \
+	          $(SRCS) 2>&1 | tee -a $(LINT_LOG)
+	@echo "=== Lint completed ===" | tee -a $(LINT_LOG)
+
+# ----------------------------------------------------------------------------
+# 轻量级语法检查（Icarus，仅语法不关心模块依赖）
+# ----------------------------------------------------------------------------
+check:
+	@echo "=== Checking RTL syntax with Icarus ==="
+	@$(IVL) -g2012 -Wall -o /dev/null $(INC_ICARUS) $(SRCS)
+	@echo "=== Syntax check passed ==="

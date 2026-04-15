@@ -66,6 +66,17 @@ cleansw:
 rebuild: clean sim
 
 # ----------------------------------------------------------------------------
+# 新增：RTL 静态检查（转发给 Makefile.sim）
+# ----------------------------------------------------------------------------
+.PHONY: lint
+lint:
+	$(MAKE) -f $(SIM_MK) lint
+
+.PHONY: check
+check:
+	$(MAKE) -f $(SIM_MK) check
+
+# ----------------------------------------------------------------------------
 # 帮助
 # ----------------------------------------------------------------------------
 .PHONY: help
@@ -78,3 +89,5 @@ help:
 	@echo "  make wave   - Open waveform viewer"
 	@echo "  make clean  - Delete all generated files"
 	@echo "  make rebuild- Clean + compile + run"
+	@echo "  make lint   - Run Verilator lint check on RTL"
+	@echo "  make check  - Run Icarus fast syntax check on RTL"

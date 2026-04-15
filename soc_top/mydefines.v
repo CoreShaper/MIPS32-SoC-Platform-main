@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 //È«¾Ö
 `define RstEnable 1'b1
 `define RstDisable 1'b0

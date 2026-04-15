@@ -1,5 +1,5 @@
 `include "defines.v"
-
+`timescale 1ns/1ps
 module axi_interconnect (
     input wire          clk,
     input wire          rst,

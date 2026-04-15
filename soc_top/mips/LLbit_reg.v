@@ -1,7 +1,7 @@
 
 
 `include "defines.v"
-
+`timescale 1ns/1ps
 module LLbit_reg(
 
 	input	wire										clk,

@@ -1,4 +1,5 @@
 //????
+`timescale 1ns/1ps
 `define RstEnable 1'b1
 `define RstDisable 1'b0
 `define ZeroWord 32'h00000000
