@@ -1,5 +1,5 @@
 === Running Verilator lint check on RTL ===
 - V e r i l a t i o n   R e p o r t: Verilator 5.046 2026-02-28 rev v5.046-55-g1264184fb
 - Verilator: Built from 2.106 MB sources in 19 modules, into 0.922 MB in 4 C++ files needing 0.000 MB
-- Verilator: Walltime 0.154 s (elab=0.013, cvt=0.088, bld=0.000); cpu 0.154 s on 1 threads; allocated 42.969 MB
+- Verilator: Walltime 0.157 s (elab=0.009, cvt=0.092, bld=0.000); cpu 0.155 s on 1 threads; allocated 42.980 MB
 === Lint completed ===

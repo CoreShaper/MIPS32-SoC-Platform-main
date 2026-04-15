@@ -1,6 +1,6 @@
-`timescale 1ns/1ps
-`include "mydefines.v"
 
+`include "mydefines.v"
+`timescale 1ns/1ps
 module myopenmips_min_sopc_tb();
 
     reg     CLOCK_50;
