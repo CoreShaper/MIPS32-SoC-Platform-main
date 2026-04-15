@@ -69,8 +69,8 @@ module mysoc (
     assign is_sim_ctrl_addr = ((data_addr == 32'hFFFFFFF0) | (data_addr == 32'hFFFFFFE0)) && data_ce;
 
     // 写操作（异步复位，同步写）
-    always @(posedge clk or posedge rst) begin
-        if (rst) begin
+    always @(posedge clk) begin
+        if (rst == `RstEnable) begin
             sim_ctrl_reg <= 32'h0;
             sim_dbg_out <= 32'h0; // 可选：第二个仿真控制寄存器
         end else if (data_ce && data_we && is_sim_ctrl_addr) begin

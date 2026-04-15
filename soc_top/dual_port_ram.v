@@ -2,14 +2,14 @@
 module dual_port_ram #(
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32,
-    parameter MEM_DEPTH  = 65536                // 2**ADDR_WIDTH 字深度
+    parameter MEM_DEPTH  = 65536               // 2**16 字深度
 ) (
     input  wire                         clk,
     
     // ---- 指令端口（只读，组合逻辑输出） ----
     input  wire                         i_ce,
     input  wire [ADDR_WIDTH-1:0]        i_addr,
-    output wire [DATA_WIDTH-1:0]        i_rdata,   // 改为 wire 类型
+    output wire [DATA_WIDTH-1:0]        i_rdata,
     
     // ---- 数据端口（读写，时序逻辑） ----
     input  wire                         d_ce,
@@ -20,54 +20,57 @@ module dual_port_ram #(
     output reg  [DATA_WIDTH-1:0]        d_rdata
 );
 
+    // 自动计算所需地址位宽
+    localparam BYTE_OFFSET     = $clog2(DATA_WIDTH/8);         // 2 (4字节)
+    localparam WORD_ADDR_WIDTH = $clog2(MEM_DEPTH);            // 16
+
+    // 从字节地址中提取字地址（只取所需的低位，高位由外部译码）
+    wire [WORD_ADDR_WIDTH-1:0] i_word_addr = i_addr[WORD_ADDR_WIDTH + BYTE_OFFSET - 1 : BYTE_OFFSET];
+    wire [WORD_ADDR_WIDTH-1:0] d_word_addr = d_addr[WORD_ADDR_WIDTH + BYTE_OFFSET - 1 : BYTE_OFFSET];
+
     // 存储器数组
     reg [DATA_WIDTH-1:0] mem [0:MEM_DEPTH-1];
     
+    // 初始化（仅用于仿真，综合工具会忽略 initial 块）
     integer i;
     initial begin
-        // 清零
         for (i = 0; i < MEM_DEPTH; i = i + 1) begin
             mem[i] = 32'h00000000;
         end
-        // 加载程序
         $readmemh("SW/obj/program.hex", mem);
-        
-        // 打印前 8 个地址的值，用于验证
         $display("RAM initialization check:");
         for (i = 0; i < 8; i = i + 1) begin
             $display("mem[%0d] = %08h", i, mem[i]);
         end
     end
 
-    // 指令端口：组合逻辑读（无时钟）
-    assign i_rdata = i_ce ? mem[i_addr[ADDR_WIDTH-1:2]] : {DATA_WIDTH{1'b0}};
+    // 指令端口：组合逻辑读
+    assign i_rdata = i_ce ? mem[i_word_addr] : {DATA_WIDTH{1'b0}};
 
-// 写操作（时序）
-always @(posedge clk) begin
-    if (d_ce && d_we) begin
-        if (d_sel[3]) mem[d_addr[ADDR_WIDTH-1:2]][31:24] <= d_wdata[31:24];
-        if (d_sel[2]) mem[d_addr[ADDR_WIDTH-1:2]][23:16] <= d_wdata[23:16];
-        if (d_sel[1]) mem[d_addr[ADDR_WIDTH-1:2]][15: 8] <= d_wdata[15: 8];
-        if (d_sel[0]) mem[d_addr[ADDR_WIDTH-1:2]][ 7: 0] <= d_wdata[ 7: 0];
-    end
-end
-
-// 读操作（组合逻辑，带写后读转发）
-always @(*) begin
-    if (d_ce) begin
-        if (d_we) begin
-            // 同一周期写且读：转发写数据（使能字节用 d_wdata，未使能字节用 mem 旧值）
-            d_rdata = { (d_sel[3] ? d_wdata[31:24] : mem[d_addr[ADDR_WIDTH-1:2]][31:24]),
-                        (d_sel[2] ? d_wdata[23:16] : mem[d_addr[ADDR_WIDTH-1:2]][23:16]),
-                        (d_sel[1] ? d_wdata[15: 8] : mem[d_addr[ADDR_WIDTH-1:2]][15: 8]),
-                        (d_sel[0] ? d_wdata[ 7: 0] : mem[d_addr[ADDR_WIDTH-1:2]][ 7: 0]) };
-        end else begin
-            // 纯读
-            d_rdata = mem[d_addr[ADDR_WIDTH-1:2]];
+    // 数据端口写操作（时序）
+    always @(posedge clk) begin
+        if (d_ce && d_we) begin
+            if (d_sel[3]) mem[d_word_addr][31:24] <= d_wdata[31:24];
+            if (d_sel[2]) mem[d_word_addr][23:16] <= d_wdata[23:16];
+            if (d_sel[1]) mem[d_word_addr][15: 8] <= d_wdata[15: 8];
+            if (d_sel[0]) mem[d_word_addr][ 7: 0] <= d_wdata[ 7: 0];
         end
-    end else begin
-        d_rdata = 32'b0;   // 未使能时输出0，可根据需求改为保持
     end
-end
+
+    // 数据端口读操作（组合逻辑，带写后读转发）
+    always @(*) begin
+        if (d_ce) begin
+            if (d_we) begin
+                d_rdata = { (d_sel[3] ? d_wdata[31:24] : mem[d_word_addr][31:24]),
+                            (d_sel[2] ? d_wdata[23:16] : mem[d_word_addr][23:16]),
+                            (d_sel[1] ? d_wdata[15: 8] : mem[d_word_addr][15: 8]),
+                            (d_sel[0] ? d_wdata[ 7: 0] : mem[d_word_addr][ 7: 0]) };
+            end else begin
+                d_rdata = mem[d_word_addr];
+            end
+        end else begin
+            d_rdata = 32'b0;
+        end
+    end
 
 endmodule

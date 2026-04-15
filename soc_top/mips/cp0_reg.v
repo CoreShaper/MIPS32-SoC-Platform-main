@@ -73,7 +73,9 @@ module cp0_reg(
 						cause_o[9:8] <= data_i[9:8];
 						cause_o[23] <= data_i[23];
 						cause_o[22] <= data_i[22];
-					end					
+					end
+                    default: 	begin
+                                        end					
 				endcase  //case addr_i
 			end
 
@@ -154,31 +156,32 @@ module cp0_reg(
 			
 	always @ (*) begin
 		if(rst == `RstEnable) begin
-			data_o <= `ZeroWord;
+			data_o = `ZeroWord;
 		end else begin
 				case (raddr_i) 
 					`CP0_REG_COUNT:		begin
-						data_o <= count_o ;
+						data_o = count_o ;
 					end
 					`CP0_REG_COMPARE:	begin
-						data_o <= compare_o ;
+						data_o = compare_o ;
 					end
 					`CP0_REG_STATUS:	begin
-						data_o <= status_o ;
+						data_o = status_o ;
 					end
 					`CP0_REG_CAUSE:	begin
-						data_o <= cause_o ;
+						data_o = cause_o ;
 					end
 					`CP0_REG_EPC:	begin
-						data_o <= epc_o ;
+						data_o = epc_o ;
 					end
 					`CP0_REG_PrId:	begin
-						data_o <= prid_o ;
+						data_o = prid_o ;
 					end
 					`CP0_REG_CONFIG:	begin
-						data_o <= config_o ;
+						data_o = config_o ;
 					end	
 					default: 	begin
+                        data_o = `ZeroWord ;
 					end			
 				endcase  //case addr_i			
 		end    //if
