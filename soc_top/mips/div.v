@@ -26,7 +26,7 @@ module div(
 	reg[31:0] temp_op2;
 	
 	assign div_temp = {1'b0,dividend[63:32]} - {1'b0,divisor};
-
+// verilator lint_off BLKSEQ
 	always @ (posedge clk) begin
 		if (rst == `RstEnable) begin
 			state <= `DivFree;
@@ -103,5 +103,5 @@ module div(
 		  endcase
 		end
 	end
-
+// verilator lint_on BLKSEQ
 endmodule

@@ -16,4 +16,7 @@ soc_top/mips/if_id.v
 soc_top/mips/openmips.v
 soc_top/mydefines.v
 soc_top/dual_port_ram.v
+soc_top/cache/icache_top.v
+soc_top/reset_sync.v
 soc_top/mysoc.v
+

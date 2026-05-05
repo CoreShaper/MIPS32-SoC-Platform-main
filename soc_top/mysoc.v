@@ -29,16 +29,21 @@ module mysoc (
     wire [`DataBus]       data_wdata;
     wire [`DataBus]       data_rdata;
     wire                  data_stallreq;      // 固定为 0
+    wire rst_n_sync; // 同步复位信号
 
-    assign inst_stallreq = 1'b0;
+    //assign inst_stallreq = 1'b0;
     assign data_stallreq = 1'b0;
-
+reset_sync reset_sync1(
+    .clk(clk),             // 时钟
+    .rst_n_async(rst),    // 外部异步复位，低有效
+    .rst_n_sync(rst_n_sync)      // 同步释放后的复位信号，低有效
+);
     // ============================================================
     // 实例化 openmips CPU
     // ============================================================
     openmips openmips0 (
         .clk              (clk),
-        .rst              (rst),
+        .rst              (!rst_n_sync),
         .int_i            (Inter),
         .timer_int_o      (timer_int_o),
         .cpu_test         (cpu_test),
@@ -70,7 +75,7 @@ module mysoc (
 
     // 写操作（异步复位，同步写）
     always @(posedge clk) begin
-        if (rst == `RstEnable) begin
+        if (!rst_n_sync == `RstEnable) begin
             sim_ctrl_reg <= 32'h0;
             sim_dbg_out <= 32'h0; // 可选：第二个仿真控制寄存器
         end else if (data_ce && data_we && is_sim_ctrl_addr) begin
@@ -85,8 +90,26 @@ module mysoc (
     // 读操作：返回寄存器值（可根据需要改为返回 0）
      assign data_rdata = is_sim_ctrl_addr ? (data_addr == 32'hFFFFFFF0 ? sim_ctrl_reg : sim_dbg_out) : dbus_rdata; // 可选：返回寄存器值
 
+wire ram_inst_ce;
+wire [31:0] ram_inst_addr;
+wire [31:0] ram_inst_rdata;
+icache_top i_cache(
+    .clk(clk),
+    .rst_sync(!rst_n_sync),
 
+    
+    .cpu_inst_ce(inst_ce),
+    .cpu_inst_addr(inst_addr),
+    .cpu_inst_data(inst_data),
+    .cpu_inst_stall(inst_stallreq),
 
+    
+    .ram_inst_ce(ram_inst_ce),
+    .ram_inst_addr(ram_inst_addr),
+    .ram_inst_rdata(ram_inst_rdata),
+
+    .icache_en(1'b1)
+);
     // ============================================================
     // 双口 RAM 接口信号（屏蔽仿真控制寄存器地址）
     // ============================================================
@@ -114,9 +137,9 @@ module mysoc (
         .clk      (clk),
 
         // 指令端口
-        .i_ce     (inst_ce),
-        .i_addr   (inst_addr),
-        .i_rdata  (inst_data),
+        .i_ce     (ram_inst_ce),
+        .i_addr   (ram_inst_addr),
+        .i_rdata  (ram_inst_rdata),
 
         // 数据端口
         .d_ce     (dbus_ce),
