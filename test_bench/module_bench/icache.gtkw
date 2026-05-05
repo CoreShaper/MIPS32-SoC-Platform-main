@@ -1,0 +1,88 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Fri May  1 15:43:21 2026
+[*]
+[dumpfile] "/home/vboxuser/MIPS32-SoC-Platform-main/test_bench/module_bench/wave.vcd"
+[dumpfile_mtime] "Fri May  1 15:36:31 2026"
+[dumpfile_size] 9204
+[savefile] "/home/vboxuser/MIPS32-SoC-Platform-main/test_bench/module_bench/icache.gtkw"
+[timestart] 0
+[size] 1850 891
+[pos] -1 -1
+*-15.000000 105000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] module_bench.
+[sst_width] 233
+[signals_width] 247
+[sst_expanded] 1
+[sst_vpaned_height] 245
+@28
+module_bench.u_icache.clk
+module_bench.u_icache.rst_n_sync
+module_bench.u_icache.state
+@22
+module_bench.u_icache.cpu_inst_addr[31:0]
+@28
+module_bench.u_icache.cpu_inst_ce
+@22
+module_bench.u_icache.cpu_inst_data[31:0]
+@28
+module_bench.u_icache.cpu_inst_stall
+module_bench.u_icache.hit
+@22
+module_bench.u_icache.hit_data[31:0]
+@420
+module_bench.u_icache.i
+@28
+module_bench.u_icache.icache_en
+@420
+module_bench.u_icache.j
+@28
+module_bench.u_icache.line_valid
+@29
+module_bench.u_icache.miss_req
+@28
+module_bench.u_icache.next_state
+@22
+module_bench.u_icache.ram_addr_reg[31:0]
+@28
+module_bench.u_icache.ram_ce_d1
+module_bench.u_icache.ram_ce_reg
+module_bench.u_icache.ram_ce_req
+@22
+module_bench.u_icache.ram_inst_addr[31:0]
+@28
+module_bench.u_icache.ram_inst_ce
+@22
+module_bench.u_icache.ram_inst_rdata[31:0]
+module_bench.u_icache.refill_base_addr[31:0]
+module_bench.u_icache.refill_index[3:0]
+@28
+module_bench.u_icache.refill_last_word
+@22
+module_bench.u_icache.refill_tag[22:0]
+module_bench.u_icache.req_index[3:0]
+module_bench.u_icache.req_tag[22:0]
+@28
+module_bench.u_icache.req_word_offset[2:0]
+module_bench.u_icache.send_cnt[2:0]
+module_bench.u_icache.tag_match
+@22
+module_bench.u_icache.valid_array[15:0]
+@28
+module_bench.u_icache.wr_cnt[2:0]
+@22
+module_bench.cpu_addr[31:0]
+@28
+module_bench.cpu_ce
+@22
+module_bench.cpu_data[31:0]
+@28
+module_bench.cpu_stall
+@22
+module_bench.ram_addr[31:0]
+@28
+module_bench.ram_ce
+@22
+module_bench.ram_rdata[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -37,7 +37,8 @@ module dual_port_ram #(
         for (i = 0; i < MEM_DEPTH; i = i + 1) begin
             mem[i] = 32'h00000000;
         end
-        $readmemh("SW/obj/program.hex", mem);
+        //$readmemh("SW/obj/program.hex", mem);
+        $readmemh("SW/obj/selftest.hex", mem);
         $display("RAM initialization check:");
         for (i = 0; i < 8; i = i + 1) begin
             $display("mem[%0d] = %08h", i, mem[i]);

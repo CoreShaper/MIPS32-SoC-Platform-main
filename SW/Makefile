@@ -21,7 +21,7 @@ ASM_OBJS := $(patsubst %.S, $(OBJDIR)/%.o, $(ASM_SRCS))
 OBJS     := $(C_OBJS) $(ASM_OBJS)
 
 # 默认目标
-all: $(TARGET).elf $(TARGET).hex $(TARGET).dis
+all: $(TARGET).elf $(TARGET).hex $(TARGET).dis selftest
 
 # 创建 obj 目录
 $(OBJDIR):
@@ -49,7 +49,29 @@ $(TARGET).bin: $(TARGET).elf
 $(TARGET).hex: $(TARGET).bin
 	perl -e 'while(read(STDIN,$$buf,4)){print unpack("H8",$$buf)."\n"}' < $< > $@
 
+# 单独编译 cpu_selftest.S
+SELFTEST_SRC = core/mips/cpu_selftest.S
+SELFTEST_OBJ = $(OBJDIR)/$(SELFTEST_SRC:.S=.o)
+SELFTEST_ELF = $(OBJDIR)/selftest.elf
+SELFTEST_HEX = $(OBJDIR)/selftest.hex
+SELFTEST_DIS = $(OBJDIR)/selftest.dis
+
+selftest: $(SELFTEST_ELF) $(SELFTEST_HEX) $(SELFTEST_DIS)
+
+$(SELFTEST_OBJ): $(SELFTEST_SRC) | $(OBJDIR)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# 链接时只用 .o 文件，不要传 linker.ld
+$(SELFTEST_ELF): $(SELFTEST_OBJ) linker.ld
+	$(LD) $(LDFLAGS) $(SELFTEST_OBJ) -o $@
+	$(OBJDUMP) -D $@ > $(SELFTEST_DIS)
+
+$(SELFTEST_HEX): $(SELFTEST_ELF)
+	$(OBJCOPY) -O binary $< $(OBJDIR)/selftest.bin
+	perl -e 'while(read(STDIN,$$buf,4)){print unpack("H8",$$buf)."\n"}' < $(OBJDIR)/selftest.bin > $@
+
 clean:
 	rm -rf $(OBJDIR)
 
-.PHONY: all clean
+.PHONY: all clean selftest

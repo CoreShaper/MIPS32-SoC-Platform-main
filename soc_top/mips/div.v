@@ -9,7 +9,7 @@ module div(
 	
 	input wire                    signed_div_i,
 	input wire[31:0]              opdata1_i,
-	input wire[31:0]		   				opdata2_i,
+	input wire[31:0]		   	  opdata2_i,
 	input wire                    start_i,
 	input wire                    annul_i,
 	
@@ -32,6 +32,10 @@ module div(
 			state <= `DivFree;
 			ready_o <= `DivResultNotReady;
 			result_o <= {`ZeroWord,`ZeroWord};
+            dividend <= {65{1'b0}};
+            divisor <= {32{1'b0}};
+            temp_op1 <= {32{1'b0}};
+            temp_op2 <= {32{1'b0}};
 		end else begin
 		  case (state)
 		  	`DivFree:			begin               //DivFree״̬
@@ -42,14 +46,14 @@ module div(
 		  				state <= `DivOn;
 		  				cnt <= 6'b000000;
 		  				if(signed_div_i == 1'b1 && opdata1_i[31] == 1'b1 ) begin
-		  					temp_op1 <= ~opdata1_i + 1;
+		  					temp_op1 = ~opdata1_i + 1;
 		  				end else begin
-		  					temp_op1 <= opdata1_i;
+		  					temp_op1 = opdata1_i;
 		  				end
 		  				if(signed_div_i == 1'b1 && opdata2_i[31] == 1'b1 ) begin
-		  					temp_op2 <= ~opdata2_i + 1;
+		  					temp_op2 = ~opdata2_i + 1;
 		  				end else begin
-		  					temp_op2 <= opdata2_i;
+		  					temp_op2 = opdata2_i;
 		  				end
 		  				dividend <= {65{1'b0}};
               dividend[32:1] <= temp_op1;
