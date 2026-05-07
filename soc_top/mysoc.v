@@ -35,7 +35,7 @@ module mysoc (
     assign data_stallreq = 1'b0;
 reset_sync reset_sync1(
     .clk(clk),             // 时钟
-    .rst_n_async(rst),    // 外部异步复位，低有效
+    .rst_n_async(!rst),    // 外部异步复位，低有效
     .rst_n_sync(rst_n_sync)      // 同步释放后的复位信号，低有效
 );
     // ============================================================

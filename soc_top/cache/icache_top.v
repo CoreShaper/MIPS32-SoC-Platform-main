@@ -64,8 +64,8 @@ module icache_top #(
     localparam REFILL = 1'b1;
     reg state, next_state;
 
-    reg [2:0] send_cnt;
-    reg [2:0] wr_cnt;
+    reg [3:0] send_cnt;
+    reg [3:0] wr_cnt;
     reg [31:0] refill_base_addr;
     reg [TAG_BITS-1:0] refill_tag;
     reg [INDEX_BITS-1:0] refill_index;
@@ -76,7 +76,7 @@ module icache_top #(
         next_state = state;
         case (state)
             IDLE:   if (miss_req) next_state = REFILL;
-            REFILL: if (wr_cnt == 3'd7 && ram_ce_d1) next_state = IDLE;
+            REFILL: if (wr_cnt == 4'd8 && ram_ce_d1) next_state = IDLE;
         endcase
     end
 
@@ -91,8 +91,8 @@ module icache_top #(
     // 计数器与锁存
     always @(posedge clk) begin
         if (rst_sync) begin
-            send_cnt         <= 3'd0;
-            wr_cnt           <= 3'd0;
+            send_cnt         <= 4'd0;
+            wr_cnt           <= 4'd0;
             refill_base_addr <= 32'd0;
             refill_tag       <= {TAG_BITS{1'b0}};
             refill_index     <= {INDEX_BITS{1'b0}};
@@ -100,8 +100,8 @@ module icache_top #(
             case (state)
                 IDLE: begin
                     if (miss_req) begin
-                        send_cnt         <= 3'd0;
-                        wr_cnt           <= 3'd0;
+                        send_cnt         <= 4'd0;
+                        wr_cnt           <= 4'd0;
                         refill_base_addr <= {req_tag, req_index, {OFFSET_BITS+2{1'b0}}};
                         refill_tag       <= req_tag;
                         refill_index     <= req_index;
@@ -109,15 +109,15 @@ module icache_top #(
                 end
 
                 REFILL: begin
-                    if (ram_inst_ce && send_cnt != 3'd7)
+                    if (ram_inst_ce && send_cnt != 4'd8)
                         send_cnt <= send_cnt + 1'b1;
 
                     if (ram_ce_d1)
                         wr_cnt <= wr_cnt + 1'b1;
 
-                    if (wr_cnt == 3'd7 && ram_ce_d1) begin
-                        send_cnt <= 3'd0;
-                        wr_cnt   <= 3'd0;
+                    if (wr_cnt == 4'd8 && ram_ce_d1) begin
+                        send_cnt <= 4'd0;
+                        wr_cnt   <= 4'd0;
                     end
                 end
             endcase
@@ -128,7 +128,7 @@ module icache_top #(
     // 旁路模式：直接组合输出，不经过寄存器，消除额外延迟
     // 缓存模式：使用寄存器输出，保证时序干净
     wire ram_ce_req_cache;
-    assign ram_ce_req_cache = (state == REFILL && send_cnt < 3'd7);
+    assign ram_ce_req_cache = (state == REFILL && send_cnt < 4'd8);
 
     reg ram_ce_reg;
     reg [31:0] ram_addr_reg;
@@ -169,7 +169,7 @@ module icache_top #(
 
     always @(posedge clk) begin
         if (rst_sync) begin
-        end else if (ram_ce_d1 && state == REFILL && wr_cnt == 3'd7) begin
+        end else if (ram_ce_d1 && state == REFILL && wr_cnt == 4'd8) begin
             valid_array[refill_index] <= 1'b1;
             tag_array[refill_index]   <= refill_tag;
         end
@@ -177,7 +177,7 @@ module icache_top #(
 
     // ---- 数据输出 ----
     wire [31:0] hit_data = hit ? data_array[req_index][req_word_offset] : 32'd0;
-    wire        refill_last_word = (state == REFILL) && ram_ce_d1 && (wr_cnt == 3'd7);
+    wire        refill_last_word = (state == REFILL) && ram_ce_d1 && (wr_cnt == 4'd8);
 
     assign cpu_inst_data = refill_last_word ? ram_inst_rdata :
                            (!icache_en)       ? ram_inst_rdata :
