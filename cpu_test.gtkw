@@ -1,20 +1,20 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Thu May  7 15:58:13 2026
+[*] Fri May  8 14:02:29 2026
 [*]
 [dumpfile] "/home/vboxuser/MIPS32-SoC-Platform-main/waveform.vcd"
-[dumpfile_mtime] "Thu May  7 15:42:23 2026"
-[dumpfile_size] 15255797
+[dumpfile_mtime] "Fri May  8 12:54:39 2026"
+[dumpfile_size] 160353
 [savefile] "/home/vboxuser/MIPS32-SoC-Platform-main/cpu_test.gtkw"
-[timestart] 11596700
+[timestart] 961000
 [size] 1850 891
 [pos] -1 -1
-*-14.298152 11641900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-16.255465 1135000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] myopenmips_min_sopc_tb.
 [treeopen] myopenmips_min_sopc_tb.myopenmips_min_sopc0.
 [treeopen] myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.
 [sst_width] 274
-[signals_width] 383
+[signals_width] 346
 [sst_expanded] 1
 [sst_vpaned_height] 245
 @28
@@ -27,9 +27,13 @@ myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.pc_reg0.rst
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.pc_reg0.clk
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.pc_reg0.flush
 @22
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.pc_reg0.pc[31:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.inst_i[31:0]
-myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.pc_reg0.new_pc[31:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.pc_reg0.stall[5:0]
+@28
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.hit
+@22
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.pc_reg0.new_pc[31:0]
 @28
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.regfile1.clk
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.regfile1.we
@@ -57,10 +61,13 @@ myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.d_wdata[31:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.d_we
 @420
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i
-@22
-myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_addr[31:0]
 @28
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_ce
+@22
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_addr[31:0]
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.wr_cnt[3:0]
+@23
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.send_cnt[3:0]
 @22
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_rdata[31:0]
 @28
@@ -70,15 +77,13 @@ myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.ctrl0.flush
 @22
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.ctrl0.stall[5:0]
 @28
-myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.hit
-@22
-myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.pc_reg0.pc[31:0]
-@28
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.line_valid
 @22
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.cpu_inst_data[31:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.hit_data[31:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.req_index[3:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.refill_index[3:0]
+@28
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.state
 [pattern_trace] 1
 [pattern_trace] 0

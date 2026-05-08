@@ -66,7 +66,7 @@ always @(posedge CLOCK_50) begin
 end
     // 超时保护（可选，建议保留以防程序跑飞）
     initial begin
-        #100000;
+        #200000;
         $display("\n========================================");
         $display("     SIMULATION TIMEOUT (FAIL)");
         $display("========================================\n");
