@@ -28,9 +28,38 @@ module icache_top #(
     output wire [31:0] ram_inst_addr,
     input  wire [31:0] ram_inst_rdata,
 
-    input  wire        icache_en
+    input  wire        icache_en,
+    // 性能计数器
+    output reg [31:0] perf_hit_cnt,
+    output reg [31:0] perf_miss_cnt,
+    output reg [31:0] perf_stall_cnt,
+    output reg [31:0] perf_cycle_cnt
 );
 
+    // ... 原有逻辑（地址拆分、存储体、命中判断、状态机等）保持不变 ...
+
+    // ---- 性能计数器 ----
+    always @(posedge clk) begin
+        if (rst_sync) begin
+            perf_hit_cnt   <= 32'd0;
+            perf_miss_cnt  <= 32'd0;
+            perf_stall_cnt <= 32'd0;
+            perf_cycle_cnt <= 32'd0;
+        end else begin
+            perf_cycle_cnt <= perf_cycle_cnt + 1;
+            // hit: 命中且 CPU 正取指且状态空闲
+            if (cpu_inst_ce && hit && state == IDLE)
+                perf_hit_cnt <= perf_hit_cnt + 1;
+            // miss: 进入 Refill 的请求（miss_req 为 1 的周期）
+            if (miss_req)
+                perf_miss_cnt <= perf_miss_cnt + 1;
+            // stall: CPU 被停顿的周期（包括 Refill 期间及 Miss 后的等待）
+            if (cpu_inst_stall)
+                perf_stall_cnt <= perf_stall_cnt + 1;
+        end
+    end
+
+    
     // ---- 地址拆分 ----
     wire [INDEX_BITS-1:0]   req_index       = cpu_inst_addr[OFFSET_BITS+INDEX_BITS+1 : OFFSET_BITS+2];
     wire [TAG_BITS-1:0]     req_tag         = cpu_inst_addr[31 : OFFSET_BITS+INDEX_BITS+2];

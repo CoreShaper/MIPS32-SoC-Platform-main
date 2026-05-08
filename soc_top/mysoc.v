@@ -4,7 +4,11 @@ module mysoc (
     input  wire         clk,
     input  wire         rst,
     output wire         cpu_test,
-    inout  wire         GPIO01
+    inout  wire         GPIO01,
+    output wire [31:0] perf_hit_cnt,
+    output wire [31:0] perf_miss_cnt,
+    output wire [31:0] perf_stall_cnt,
+    output wire [31:0] perf_cycle_cnt
 );
 
     // ============================================================
@@ -90,6 +94,7 @@ reset_sync reset_sync1(
     // 读操作：返回寄存器值（可根据需要改为返回 0）
      assign data_rdata = is_sim_ctrl_addr ? (data_addr == 32'hFFFFFFF0 ? sim_ctrl_reg : sim_dbg_out) : dbus_rdata; // 可选：返回寄存器值
 
+
 wire ram_inst_ce;
 wire [31:0] ram_inst_addr;
 wire [31:0] ram_inst_rdata;
@@ -108,7 +113,11 @@ icache_top i_cache(
     .ram_inst_addr(ram_inst_addr),
     .ram_inst_rdata(ram_inst_rdata),
 
-    .icache_en(1'b1)
+    .icache_en(1'b0),
+    .perf_hit_cnt(perf_hit_cnt),
+    .perf_miss_cnt(perf_miss_cnt),
+    .perf_stall_cnt(perf_stall_cnt),
+    .perf_cycle_cnt(perf_cycle_cnt)
 );
     // ============================================================
     // 双口 RAM 接口信号（屏蔽仿真控制寄存器地址）

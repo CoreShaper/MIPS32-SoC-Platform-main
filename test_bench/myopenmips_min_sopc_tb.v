@@ -6,7 +6,8 @@ module myopenmips_min_sopc_tb();
     reg     CLOCK_50;
     reg     rst;
     wire    gpio;
-    
+
+wire [31:0] perf_hit, perf_miss, perf_stall, perf_cycle;
     // 监视仿真控制寄存器（来自 mysoc 内部）
     wire [31:0] sim_ctrl;
     assign sim_ctrl = myopenmips_min_sopc0.sim_ctrl_reg;
@@ -24,11 +25,19 @@ module myopenmips_min_sopc_tb();
     end
 
 always @(posedge CLOCK_50) begin
-    if (sim_ctrl == 32'h00000001) begin
+if (sim_ctrl == 32'h00000001) begin
         $display("\n========================================");
         $display("         TEST PASSED!");
+        // 打印性能计数
+        $display("--- I-Cache Performance ---");
+        $display("  Cycles:  %0d", perf_cycle);
+        $display("  Hits:    %0d", perf_hit);
+        $display("  Misses:  %0d", perf_miss);
+        $display("  Stalls:  %0d", perf_stall);
+        if (perf_hit + perf_miss > 0)
+            $display("  Hit rate: %.1f%%", 100.0 * perf_hit / (perf_hit + perf_miss));
         $display("========================================\n");
-        $finish;
+        $finish; 
     end else if ((sim_ctrl & 32'hFFFF0000) == 32'hDEAD0000) begin
         // 解析错误码
         $display("\n========================================");
@@ -79,12 +88,17 @@ end
         $dumpvars(0, myopenmips_min_sopc_tb);
     end
 
-    // 实例化 SoC
-    mysoc myopenmips_min_sopc0 (
-        .clk    (CLOCK_50),
-        .rst    (rst),
-        .cpu_test (),          // 若 mysoc 未输出此端口，可删除该连接
-        .GPIO01  (gpio)
-    );
 
+
+mysoc myopenmips_min_sopc0 (
+    .clk              (CLOCK_50),
+    .rst              (rst),
+    .cpu_test         (),
+    .GPIO01           (gpio),
+    // 新添加的四个性能端口
+    .perf_hit_cnt     (perf_hit),
+    .perf_miss_cnt    (perf_miss),
+    .perf_stall_cnt   (perf_stall),
+    .perf_cycle_cnt   (perf_cycle)
+);
 endmodule
