@@ -2,7 +2,8 @@
 module dual_port_ram #(
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32,
-    parameter MEM_DEPTH  = 65536               // 2**16 字深度
+    parameter MEM_DEPTH  = 65536,               // 2**16 字深度
+    parameter I_LATENCY  = 0           // 指令端口读延迟（0：组合输出；>0：延迟周期数）
 ) (
     input  wire                         clk,
     
@@ -45,9 +46,29 @@ module dual_port_ram #(
         end
     end
 
-    // 指令端口：组合逻辑读
-    assign i_rdata = i_ce ? mem[i_word_addr] : {DATA_WIDTH{1'b0}};
+    // // 指令端口：组合逻辑读
+    // assign i_rdata = i_ce ? mem[i_word_addr] : {DATA_WIDTH{1'b0}};
+// 指令端口组合读数据（内部使用）
+    wire [DATA_WIDTH-1:0] i_rdata_comb;
+    assign i_rdata_comb = i_ce ? mem[i_word_addr] : {DATA_WIDTH{1'b0}};
 
+    // 根据 I_LATENCY 生成最终输出
+    generate
+        if (I_LATENCY == 0) begin : i_nodelay
+            assign i_rdata = i_rdata_comb;
+        end else begin : i_delay
+            // 移位寄存器链
+            reg [DATA_WIDTH-1:0] i_rdata_sr [0:I_LATENCY-1];
+            integer d;
+            always @(posedge clk) begin
+                i_rdata_sr[0] <= i_rdata_comb;
+                for (d = 1; d < I_LATENCY; d = d + 1) begin
+                    i_rdata_sr[d] <= i_rdata_sr[d-1];
+                end
+            end
+            assign i_rdata = i_rdata_sr[I_LATENCY-1];
+        end
+    endgenerate
     // 数据端口写操作（时序）
     always @(posedge clk) begin
         if (d_ce && d_we) begin

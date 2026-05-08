@@ -113,7 +113,7 @@ icache_top i_cache(
     .ram_inst_addr(ram_inst_addr),
     .ram_inst_rdata(ram_inst_rdata),
 
-    .icache_en(1'b0),
+    .icache_en(1'b1),
     .perf_hit_cnt(perf_hit_cnt),
     .perf_miss_cnt(perf_miss_cnt),
     .perf_stall_cnt(perf_stall_cnt),
@@ -141,7 +141,8 @@ icache_top i_cache(
     dual_port_ram #(
         .ADDR_WIDTH(32),
         .DATA_WIDTH(32),
-        .MEM_DEPTH(16384)
+        .MEM_DEPTH(16384),
+        .I_LATENCY(4) // 指令端口 1 周期读延迟
     ) u_ram (
         .clk      (clk),
 
