@@ -532,7 +532,7 @@ Disassembly of section .text:
 
 00000910 <timer_isr>:
  910:	40024800 	mfc0	v0,c0_count
- 914:	244203e8 	addiu	v0,v0,1000
+ 914:	24422710 	addiu	v0,v0,10000
  918:	40825800 	mtc0	v0,c0_compare
  91c:	3c030000 	lui	v1,0x0
  920:	8c620c80 	lw	v0,3200(v1)

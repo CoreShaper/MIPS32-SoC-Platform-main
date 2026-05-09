@@ -2324,7 +2324,7 @@ _int_handler:
 
     # 清除定时器中断：写 Compare 推迟下次中断，同时写 Cause.IP0 清零
     mfc0  $k0, $9                 # 读 Count
-    addiu $k0, $k0, 1000          # 推迟 1000 周期
+    addiu $k0, $k0, 5000          # 推迟 1000 周期
     mtc0  $k0, $11                # 写 Compare
 
     # 清除 Cause.IP0（写 1 清零）

@@ -98,6 +98,7 @@ reset_sync reset_sync1(
 wire ram_inst_ce;
 wire [31:0] ram_inst_addr;
 wire [31:0] ram_inst_rdata;
+wire ram_inst_ready;
 icache_top i_cache(
     .clk(clk),
     .rst_sync(!rst_n_sync),
@@ -112,8 +113,9 @@ icache_top i_cache(
     .ram_inst_ce(ram_inst_ce),
     .ram_inst_addr(ram_inst_addr),
     .ram_inst_rdata(ram_inst_rdata),
+    .ram_inst_ready(ram_inst_ready),
 
-    .icache_en(1'b1),
+    .icache_en(1'b0),
     .perf_hit_cnt(perf_hit_cnt),
     .perf_miss_cnt(perf_miss_cnt),
     .perf_stall_cnt(perf_stall_cnt),
@@ -135,6 +137,7 @@ icache_top i_cache(
     assign dbus_addr  = data_addr;
     assign dbus_wdata = data_wdata;           // 使用 data_wdata
 
+
     // ============================================================
     // 双口 RAM 实例化
     // ============================================================
@@ -142,14 +145,16 @@ icache_top i_cache(
         .ADDR_WIDTH(32),
         .DATA_WIDTH(32),
         .MEM_DEPTH(16384),
-        .I_LATENCY(4) // 指令端口 1 周期读延迟
+        .I_LATENCY(10) // 指令端口 4 周期读延迟
     ) u_ram (
         .clk      (clk),
+        .rst_n    (rst_n_sync),
 
         // 指令端口
         .i_ce     (ram_inst_ce),
         .i_addr   (ram_inst_addr),
         .i_rdata  (ram_inst_rdata),
+        .i_ready  (ram_inst_ready), // 直接使用数据有效信号作为就绪信号
 
         // 数据端口
         .d_ce     (dbus_ce),
@@ -158,6 +163,7 @@ icache_top i_cache(
         .d_addr   (dbus_addr),
         .d_wdata  (dbus_wdata),
         .d_rdata  (dbus_rdata)
+
     );
 
     // ============================================================

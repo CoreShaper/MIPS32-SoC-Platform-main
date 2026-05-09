@@ -1,18 +1,19 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Fri May  8 14:02:29 2026
+[*] Sat May  9 12:09:39 2026
 [*]
 [dumpfile] "/home/vboxuser/MIPS32-SoC-Platform-main/waveform.vcd"
-[dumpfile_mtime] "Fri May  8 12:54:39 2026"
-[dumpfile_size] 160353
+[dumpfile_mtime] "Sat May  9 11:45:54 2026"
+[dumpfile_size] 12915080
 [savefile] "/home/vboxuser/MIPS32-SoC-Platform-main/cpu_test.gtkw"
-[timestart] 961000
+[timestart] 844500
 [size] 1850 891
 [pos] -1 -1
 *-16.255465 1135000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] myopenmips_min_sopc_tb.
 [treeopen] myopenmips_min_sopc_tb.myopenmips_min_sopc0.
 [treeopen] myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.
+[treeopen] myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.
 [sst_width] 274
 [signals_width] 346
 [sst_expanded] 1
@@ -66,9 +67,7 @@ myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_ce
 @22
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_addr[31:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.wr_cnt[3:0]
-@23
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.send_cnt[3:0]
-@22
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_rdata[31:0]
 @28
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.openmips0.ctrl0.stallreq_from_if
@@ -83,7 +82,22 @@ myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.cpu_inst_data[31:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.hit_data[31:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.req_index[3:0]
 myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.refill_index[3:0]
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_addr[31:0]
 @28
-myopenmips_min_sopc_tb.myopenmips_min_sopc0.i_cache.state
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_ce
+@22
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_rdata[31:0]
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_rdata_comb[31:0]
+@28
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_ready
+@22
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_word_addr[13:0]
+@29
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_delay.i_state
+@28
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_delay.i_state_ne
+@22
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_delay.last_i_addr[13:0]
+myopenmips_min_sopc_tb.myopenmips_min_sopc0.u_ram.i_delay.wait_cnt[31:0]
 [pattern_trace] 1
 [pattern_trace] 0

@@ -6,11 +6,13 @@ module dual_port_ram #(
     parameter I_LATENCY  = 0           // 指令端口读延迟（0：组合输出；>0：延迟周期数）
 ) (
     input  wire                         clk,
+    input  wire                         rst_n,
     
     // ---- 指令端口（只读，组合逻辑输出） ----
     input  wire                         i_ce,
     input  wire [ADDR_WIDTH-1:0]        i_addr,
     output wire [DATA_WIDTH-1:0]        i_rdata,
+    output wire                         i_ready, // 新增指令端口就绪信号
     
     // ---- 数据端口（读写，时序逻辑） ----
     input  wire                         d_ce,
@@ -38,37 +40,108 @@ module dual_port_ram #(
         for (i = 0; i < MEM_DEPTH; i = i + 1) begin
             mem[i] = 32'h00000000;
         end
-        //$readmemh("SW/obj/program.hex", mem);
-        $readmemh("SW/obj/selftest.hex", mem);
+        $readmemh("SW/obj/program.hex", mem);
+        //$readmemh("SW/obj/selftest.hex", mem);
         $display("RAM initialization check:");
         for (i = 0; i < 8; i = i + 1) begin
             $display("mem[%0d] = %08h", i, mem[i]);
         end
     end
 
-    // // 指令端口：组合逻辑读
+    // 指令端口：组合逻辑读，数据与就绪信号均在当拍有效
     // assign i_rdata = i_ce ? mem[i_word_addr] : {DATA_WIDTH{1'b0}};
-// 指令端口组合读数据（内部使用）
-    wire [DATA_WIDTH-1:0] i_rdata_comb;
-    assign i_rdata_comb = i_ce ? mem[i_word_addr] : {DATA_WIDTH{1'b0}};
+    // assign i_ready = i_ce;              // 组合输出，表示数据有效
 
-    // 根据 I_LATENCY 生成最终输出
-    generate
-        if (I_LATENCY == 0) begin : i_nodelay
-            assign i_rdata = i_rdata_comb;
-        end else begin : i_delay
-            // 移位寄存器链
-            reg [DATA_WIDTH-1:0] i_rdata_sr [0:I_LATENCY-1];
-            integer d;
-            always @(posedge clk) begin
-                i_rdata_sr[0] <= i_rdata_comb;
-                for (d = 1; d < I_LATENCY; d = d + 1) begin
-                    i_rdata_sr[d] <= i_rdata_sr[d-1];
+// ============================================================
+// Instruction Port Delay Model
+// 固定延迟同步存储器模型
+// ============================================================
+
+generate
+if (I_LATENCY == 0) begin : i_nodelay
+
+    assign i_rdata = i_ce ? mem[i_word_addr] : 0;
+    assign i_ready = i_ce;
+
+end
+else begin : i_delay
+
+    reg [DATA_WIDTH-1:0] rdata_r;
+
+    reg [31:0] wait_cnt;
+
+    reg busy;
+
+    //----------------------------------------------------------
+    // 时序逻辑
+    //----------------------------------------------------------
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+
+            rdata_r <= 0;
+
+            wait_cnt <= 0;
+
+            busy <= 1;
+
+        end
+        else begin
+
+            //--------------------------------------------------
+            // IDLE
+            //--------------------------------------------------
+            if (!busy) begin
+
+                if (i_ce) begin
+
+                    //--------------------------------------------------
+                    // 开始一次memory access
+                    //--------------------------------------------------
+                    wait_cnt <= I_LATENCY - 1;
+
+                    busy <= 1'b1;
                 end
             end
-            assign i_rdata = i_rdata_sr[I_LATENCY-1];
+
+            //--------------------------------------------------
+            // BUSY
+            //--------------------------------------------------
+            else begin
+
+                if (wait_cnt != 0) begin
+
+                    wait_cnt <= wait_cnt - 1;
+
+                end
+                else begin
+
+                    //--------------------------------------------------
+                    // latency结束
+                    // 此时PC仍被stall住
+                    // 直接读取当前PC对应数据
+                    //--------------------------------------------------
+                    rdata_r <= mem[i_word_addr];
+
+                    busy <= 1'b0;
+                end
+            end
         end
-    endgenerate
+    end
+
+    //----------------------------------------------------------
+    // 输出
+    //----------------------------------------------------------
+
+    // busy期间表示memory未ready
+    assign i_ready = !busy;
+
+    // 数据始终保持
+    assign i_rdata = rdata_r;
+
+end
+endgenerate
+
+
     // 数据端口写操作（时序）
     always @(posedge clk) begin
         if (d_ce && d_we) begin
@@ -96,3 +169,4 @@ module dual_port_ram #(
     end
 
 endmodule
+

@@ -24,7 +24,7 @@ static inline void trapframe_advance_epc(struct trap_frame *tf, int in_delayslot
 // ---------- 弱定义的中断服务函数 ----------
 void __attribute__((weak)) timer_isr(struct trap_frame *tf) {
     unsigned int count1 = cp0_read_count();
-    cp0_write_compare(count1 + 1000);
+    cp0_write_compare(count1 + 10000);
     count++;
 
 }
